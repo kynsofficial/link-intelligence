@@ -342,10 +342,12 @@
     height: 40px;
 }
 
-.li-btn:disabled {
+.li-btn:disabled,
+.li-btn.li-disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    pointer-events: none;
 }
 
 /* Progress */

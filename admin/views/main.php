@@ -5,10 +5,10 @@ if (!defined('ABSPATH')) {
 ?>
 
 <div class="wrap li-wrap">
-    
+
     <!-- Main Header - Full Width at Top -->
     <div class="li-main-header">
-        <h1>Link Health</h1>
+        <h1>Link Intelligence</h1>
         <p>Production-grade link analysis and intelligence engine</p>
     </div>
 
@@ -45,24 +45,24 @@ if (!defined('ABSPATH')) {
 
         <!-- Main Content -->
         <div class="li-main">
-            
+
             <!-- Progress Container (Hidden by default) -->
             <div class="li-progress-container li-hidden">
                 <div class="li-progress-header">
                     <h2 class="li-progress-title">Operation in Progress</h2>
                     <button class="li-btn li-btn-danger li-btn-sm li-cancel-operation">Cancel</button>
                 </div>
-                
+
                 <div class="li-progress-info">
                     <span class="li-current-post">Initializing...</span>
                     <span class="li-progress-current">0 / 0</span>
                     <span class="li-progress-percentage">0%</span>
                 </div>
-                
+
                 <div class="li-progress-bar-wrapper">
                     <div class="li-progress-bar" style="width: 0%;"></div>
                 </div>
-                
+
                 <div class="li-execution-log-title">Execution Log</div>
                 <div class="li-execution-log"></div>
             </div>
@@ -92,7 +92,7 @@ if (!defined('ABSPATH')) {
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div class="li-table-wrapper">
                             <table class="li-table">
                                 <thead>
@@ -173,30 +173,37 @@ if (!defined('ABSPATH')) {
             <div id="li-section-intelligence" class="li-section" style="display: none;">
                 <div class="li-card">
                     <div class="li-card-header">
-                        <h2 class="li-card-title">Link Intelligence</h2>
+                        <h2 class="li-card-title">Link Intelligence Analysis</h2>
                         <button class="li-btn li-btn-primary li-start-scan" data-scan-type="intelligence">
                             <span class="dashicons dashicons-controls-play"></span> Start Analysis
                         </button>
                     </div>
                     <div class="li-card-body">
-                        <div class="li-intelligence-tabs">
-                            <button class="li-intelligence-tab active" data-metric="anchor_text">Most Used Anchor Text</button>
-                            <button class="li-intelligence-tab" data-metric="most_linked_internal">Most Linked Internal Pages</button>
-                            <button class="li-intelligence-tab" data-metric="external_domain">Most Linked External Domains</button>
-                            <button class="li-intelligence-tab" data-metric="zero_inbound">Pages with Zero Inbound Links</button>
+                        <div class="li-intelligence-controls">
+                            <label for="intelligence-filter" style="margin-right: 12px;">View:</label>
+                            <select id="intelligence-filter" class="li-intelligence-filter">
+                                <option value="most_linked_internal">Most Linked Pages</option>
+                                <option value="anchor_text">Common Anchor Texts</option>
+                                <option value="external_domain">External Domains</option>
+                                <option value="zero_inbound">Pages with Zero Inbound Links</option>
+                            </select>
                         </div>
-                        
+
                         <div class="li-table-wrapper">
                             <table class="li-table">
-                                <thead class="li-intelligence-thead">
-                                    <!-- Dynamic headers based on metric type -->
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Count</th>
+                                        <th>Details</th>
+                                    </tr>
                                 </thead>
                                 <tbody class="li-intelligence-table">
                                     <tr>
-                                        <td colspan="5" class="li-text-center">
+                                        <td colspan="4" class="li-text-center">
                                             <div class="li-empty-state">
                                                 <div class="li-empty-icon"><span class="dashicons dashicons-chart-bar"></span></div>
-                                                <div class="li-empty-title">No analysis data</div>
+                                                <div class="li-empty-title">No data yet</div>
                                                 <div class="li-empty-text">Run an intelligence analysis to see insights</div>
                                             </div>
                                         </td>
@@ -214,15 +221,29 @@ if (!defined('ABSPATH')) {
                 <div class="li-card">
                     <div class="li-card-header">
                         <h2 class="li-card-title">Scan History</h2>
-                        <button class="li-btn li-btn-danger li-delete-all-scans">
-                            <span class="dashicons dashicons-trash"></span> Delete All History
+                        <button class="li-btn li-btn-danger li-clear-all-scans">
+                            <span class="dashicons dashicons-trash"></span> Clear All History
                         </button>
                     </div>
                     <div class="li-card-body">
+                        <!-- Bulk Actions Bar for Scan History (Hidden by default) -->
+                        <div class="li-bulk-actions-bar-history li-hidden">
+                            <div class="li-bulk-actions-left">
+                                <input type="checkbox" class="li-bulk-select-all-history" title="Select All">
+                                <span class="li-selected-count-history">0 selected</span>
+                            </div>
+                            <div class="li-bulk-actions-right">
+                                <button class="li-btn li-btn-danger li-btn-sm li-delete-selected-scans">
+                                    <span class="dashicons dashicons-trash"></span> Delete Selected
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="li-table-wrapper">
                             <table class="li-table">
                                 <thead>
                                     <tr>
+                                        <th style="width: 40px;" class="li-table-checkbox"><input type="checkbox" class="li-select-all-history-header"></th>
                                         <th data-sort="scan_type">Scan Type</th>
                                         <th data-sort="scan_config">Configuration</th>
                                         <th data-sort="total_posts">Total Scanned</th>
@@ -341,9 +362,9 @@ if (!defined('ABSPATH')) {
                     <div class="li-radio-group" id="content-type-group">
                         <?php foreach ($post_types as $type): ?>
                             <div class="li-radio-item">
-                                <input type="<?php echo (isset($settings['allow_multiple_content_types']) && $settings['allow_multiple_content_types']) ? 'checkbox' : 'radio'; ?>" 
-                                       name="content_type" 
-                                       value="<?php echo esc_attr($type['name']); ?>" 
+                                <input type="<?php echo (isset($settings['allow_multiple_content_types']) && $settings['allow_multiple_content_types']) ? 'checkbox' : 'radio'; ?>"
+                                       name="content_type"
+                                       value="<?php echo esc_attr($type['name']); ?>"
                                        id="content_type_<?php echo esc_attr($type['name']); ?>"
                                        class="content-type-input">
                                 <label for="content_type_<?php echo esc_attr($type['name']); ?>"><?php echo esc_html($type['label']); ?></label>
@@ -366,29 +387,29 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <!-- Support This Plugin Section -->
-    <div class="li-support-footer" style="margin-top: 40px; margin-bottom: 20px;">
-        <div class="li-card">
-            <div class="li-card-body" style="padding: 24px;">
-                <h2 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                    <span style="color: #d63638;">❤️</span> Support This Plugin
-                </h2>
-                <p style="margin: 0 0 16px 0; color: #646970; font-size: 14px;">
-                    Love this plugin 😍? I will appreciate your input in any or all of these:
-                </p>
-                <ul style="margin: 0; padding-left: 20px; list-style: disc; color: #2271b1;">
-                    <li style="margin-bottom: 8px;">
-                        <a href="https://buy.stripe.com/4gw4iJ3c676t1IQaEF" target="_blank" style="text-decoration: none; color: #2271b1;">Buy Me a Coffee</a>
-                    </li>
-                    <li style="margin-bottom: 8px;">
-                        <a href="https://wordpress.org/support/plugin/link-intelligence/reviews/#new-post" target="_blank" style="text-decoration: none; color: #2271b1;">Please write us a 5-star review on WordPress</a>
-                    </li>
-                    <li style="margin-bottom: 8px;">
-                        <a href="https://twitter.com/example" target="_blank" style="text-decoration: none; color: #2271b1;">Follow me on Twitter for support or questions</a>
-                    </li>
-                </ul>
+      <!-- Support This Plugin Section -->
+        <div class="li-support-footer" style="margin-top: 40px; margin-bottom: 20px;">
+            <div class="li-card">
+                <div class="li-card-body" style="padding: 24px;">
+                    <h2 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #d63638;">❤️</span> Support This Plugin
+                    </h2>
+                    <p style="margin: 0 0 16px 0; color: #646970; font-size: 14px;">
+                        Love this plugin 😍? I will appreciate your input in any or all of these:
+                    </p>
+                    <ul style="margin: 0; padding-left: 20px; list-style: disc; color: #2271b1;">
+                        <li style="margin-bottom: 8px;">
+                            <a href="https://buy.stripe.com/4gw4iJ3c676t1IQaEF" target="_blank" style="text-decoration: none; color: #2271b1;">Buy Me a Coffee</a>
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            <a href="https://wordpress.org/support/plugin/link-health/reviews/#new-post" target="_blank" style="text-decoration: none; color: #2271b1;">Please write us a 5-star review on WordPress</a>
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            <a href="https://x.com/kynsofficial" target="_blank" style="text-decoration: none; color: #2271b1;">Follow me on Twitter for support or questions</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
