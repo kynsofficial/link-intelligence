@@ -93,7 +93,7 @@ class Link_Intelligence {
 
     public function add_action_links($links) {
         $plugin_links = array(
-            '<a href="' . admin_url('admin.php?page=link-health') . '">' . __('Settings', 'link-health') . '</a>',
+            '<a href="' . admin_url('admin.php?page=link-intelligence') . '">' . __('Settings', 'link-health') . '</a>',
         );
         return array_merge($plugin_links, $links);
     }
