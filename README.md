@@ -6,233 +6,228 @@
 
 Production-grade link analysis and intelligence engine for WordPress. Monitor internal and external link health, detect broken links and redirects, and gain editorial link intelligence without automatic content modifications.
 
+---
+
 ## Overview
 
-Link Health is a comprehensive link monitoring and analysis tool built for editorial teams, SEO professionals, and site maintainers who need complete visibility into their WordPress site's link structure. Unlike automated link fixers, this plugin provides detection, analysis, and manual control over all link modifications.
+Link Health is a comprehensive link monitoring and analysis tool built for editorial teams, SEO professionals, and site maintainers who need complete visibility into a WordPress site’s link structure.
+
+Unlike automated link fixers, this plugin focuses on detection, reporting, and editorial decision-making rather than automatic content changes.
 
 The plugin scans WordPress content to identify three categories of information:
 
-1. **Internal Link Health**: Redirects, broken links, and server errors on internal URLs
-2. **External Link Errors**: Broken and unreachable external destinations
-3. **Link Intelligence**: Linking patterns, anchor text usage, and domain relationships
+1. **Internal Link Health**  
+   Redirects, broken links, and server errors on internal URLs.
 
-All fixes require explicit administrator approval. No content is modified automatically.
+2. **External Link Errors**  
+   Broken and unreachable outbound destinations.
+
+3. **Link Intelligence**  
+   Linking patterns, anchor text usage, and external domain relationships.
+
+All fixes require explicit administrator action. No content is modified automatically.
+
+---
 
 ## Why Link Health Matters
 
-Links degrade over time. Internal restructuring creates redirect chains. External sites move or shut down. Content evolves but link references remain static. These issues compound into measurable SEO problems:
+Links degrade over time. Internal restructuring introduces redirect chains. External websites move, change ownership, or shut down. Content evolves, but link references often remain static.
 
-* Redirect chains increase page load time and dilute link equity
-* Broken internal links waste crawl budget and harm user experience
-* Broken external links signal poor content maintenance to search engines
-* Inefficient internal linking leaves valuable content orphaned
-* Over-linking to specific domains may trigger spam filters
+These issues compound into measurable problems:
 
-Link Health addresses these problems through scheduled auditing and manual correction workflows, not automated replacements that may introduce new problems.
+- Redirect chains increase page load time and dilute link equity
+- Broken internal links waste crawl budget and harm user experience
+- Broken external links signal poor content maintenance
+- Inefficient internal linking leaves valuable content orphaned
+- Over-linking to specific domains may trigger spam filters
+
+Link Health addresses these problems through controlled auditing and review workflows rather than automated replacements.
+
+---
 
 ## Internal Link Health
 
 The Internal Links scanner examines all links within your site and reports:
 
-**Redirect Detection**
+### Redirect Detection
 
-* HTTP 301 (Moved Permanently)
-* HTTP 302 (Found / Temporary Redirect)
-* HTTP 307 (Temporary Redirect)
-* HTTP 308 (Permanent Redirect)
+- HTTP 301 (Moved Permanently)
+- HTTP 302 (Found / Temporary Redirect)
+- HTTP 307 (Temporary Redirect)
+- HTTP 308 (Permanent Redirect)
 
-For each redirect, the plugin shows the current link, the final destination, and the redirect chain status code. This allows editorial teams to update links to point directly to final destinations, eliminating redirect latency.
+For each redirect, the plugin shows the current link, the final destination, and the redirect chain.
 
-**Error Detection**
+### Error Detection
 
-* HTTP 404 (Not Found)
-* HTTP 410 (Gone)
-* HTTP 500-level server errors
+- HTTP 404 (Not Found)
+- HTTP 410 (Gone)
+- HTTP 5xx (Server Errors)
 
-These errors indicate broken internal references that harm user experience and SEO. Each error shows the source post, anchor text, and broken URL for easy correction.
+Each issue includes the source post, anchor text, URL, and HTTP status code.
 
-**Issue Details**
+### Issue Details
 
-For each detected issue, Link Health displays:
+For every detected issue, Link Health displays:
 
-* Source post title and type
-* Anchor text used in the link
-* Current URL being linked
-* Destination URL (for redirects)
-* HTTP status code
-* Issue type classification
-* Fix status (Pending, Fixed, Ignored)
+- Source post title and type
+- Anchor text used in the link
+- Current URL
+- Destination URL (for redirects)
+- HTTP status code
+- Issue classification
+- Fix status (Pending, Fixed, Ignored)
 
-Administrators can edit the source post directly, apply a URL fix to update the link in-place, or ignore the issue if it represents a valid editorial decision.
+Administrators can edit the source post, apply a URL replacement, or ignore the issue.
+
+---
 
 ## External Link Errors
 
-The External Errors scanner validates outbound links to external domains:
+The External Links scanner validates outbound links to third-party domains.
 
-**Error Types**
+### Error Types
 
-* HTTP 404 (Not Found)
-* HTTP 410 (Gone)
-* HTTP 5xx (Server Errors)
-* Unreachable domains (DNS failures, timeouts)
+- HTTP 404 (Not Found)
+- HTTP 410 (Gone)
+- HTTP 5xx (Server Errors)
+- DNS failures and timeouts
 
-**Detection Strategy**
+### Detection Strategy
 
-External URL validation uses WordPress HTTP API with configurable timeouts and transient caching. URLs are checked once per scan and results are cached to reduce external request volume.
+External URL validation uses the WordPress HTTP API with transient caching. URLs are checked once per scan to reduce unnecessary external requests.
 
-**Editorial Response**
+The plugin does not automatically replace external URLs. Editorial review is required.
 
-For broken external links, editorial teams can:
-
-* Update to a current working URL
-* Find an archived version via Wayback Machine
-* Remove the link if no replacement exists
-* Ignore if the link represents historical reference
-
-The plugin does not automatically replace external URLs because many broken links require editorial judgment about appropriate replacements.
+---
 
 ## Link Intelligence Analysis
 
-Beyond error detection, Link Health provides content strategy insights through link pattern analysis:
+Beyond error detection, Link Health provides insight into how content is interconnected.
 
 ### Most Linked Internal Pages
 
-Identifies pages receiving the most inbound internal links. This metric reveals:
+Identifies pages receiving the highest number of inbound internal links. This helps to:
 
-* Which content your site considers most important
-* Potential pillar pages for topic clusters
-* Pages that may benefit from strategic de-linking if over-optimized
-* Content that receives unexpectedly low internal link attention
+- Discover pillar or hub content
+- Identify over-linked or under-linked pages
+- Improve internal linking balance
 
-Results show inbound link counts and the ability to drill down into source posts and anchor texts used.
+Results include inbound link counts and expandable details showing source posts and anchor text usage.
+
+---
 
 ### External Domains
 
-Tracks which external domains receive the most outbound links from your content. Use cases include:
+Groups outbound links by destination domain to reveal:
 
-* Identifying citation and reference patterns
-* Finding over-reliance on specific sources
-* Spotting domains you link to frequently (partnership opportunities)
-* Ensuring external link diversity for natural link profiles
+- Frequently cited external sources
+- Over-reliance on specific domains
+- Citation and reference patterns
 
-Results include outbound link counts and expandable details showing which posts link to each domain and what anchor texts are used.
+Detailed views show which posts link to each domain and the anchor texts used.
+
+---
 
 ### Anchor Text Patterns
 
-Analyzes anchor text usage across your site to identify:
+Analyzes anchor text usage across the site to identify:
 
-* Over-optimized anchor text (repeated exact-match phrases)
-* Branded vs. generic anchor distribution
-* Opportunities for natural anchor text variation
-* Potential keyword stuffing patterns
+- Repeated exact-match anchors
+- Generic versus descriptive anchors
+- Opportunities for more natural phrasing
 
-This intelligence supports editorial decisions about natural, user-friendly anchor text selection.
+This supports editorial consistency and content quality.
+
+---
 
 ## Scan Engine Design
 
-Link Health uses a single-URL-per-AJAX-request architecture to prevent server timeouts and resource exhaustion:
+Scans are explicitly initiated by administrators and run entirely within the WordPress admin environment.
 
-**Scan Process**
+### Scan Process
 
-1. Administrator initiates scan from plugin interface
-2. Plugin queries WordPress database for posts matching selected content types
-3. For each post, content is parsed to extract all link elements
-4. URLs are queued for validation
-5. JavaScript makes sequential AJAX requests, processing one URL per request
-6. Each URL is validated using native WordPress functions or HTTP requests as needed
-7. Results are stored in custom database tables
-8. Scan continues until all URLs are processed or administrator cancels
+1. Administrator initiates a scan
+2. Published content is queried directly from the database
+3. Links are extracted from `post_content`
+4. URLs are resolved using the WordPress HTTP API
+5. Results are stored incrementally in custom tables
+6. Scan progress is persisted and resumable
 
-**Performance Characteristics**
+There is no frontend crawling and no background content mutation.
 
-* No background processing or WP-Cron usage
-* All scanning happens in admin-initiated foreground sessions
-* Processing rate depends on site URL count and server response time
-* Large sites may take 10-30 minutes to complete full scans
-* Scans can be cancelled and resumed without data loss
+### Performance Characteristics
 
-**Resource Management**
+- One URL processed per execution cycle
+- No long-running PHP processes
+- Pagination for large datasets
+- Caching to reduce redundant HTTP requests
 
-* WordPress transient caching reduces redundant HTTP requests
-* Database queries use indexed columns for performance
-* Results pagination prevents memory exhaustion on large result sets
-* One-URL-at-a-time processing prevents PHP timeout issues
+Large sites may require longer scan times, but scans remain safe and transparent.
 
-## Manual Fixing Philosophy
-
-Link Health intentionally requires manual approval for all link modifications. Automated fixing presents several risks:
-
-**Editorial Risks**
-
-* Context matters: "Click here" may need to become "View pricing" when the destination changes
-* Some redirects are intentional (campaign tracking, A/B tests)
-* Broken external links may need archival versions, not just removal
-
-**Technical Risks**
-
-* Bulk URL replacement may match unintended occurrences
-* Post revisions can be corrupted by automated find-replace operations
-* Some URLs appear in shortcodes, meta fields, or structured data where direct replacement fails
-
-**SEO Risks**
-
-* Changing anchor text affects on-page optimization
-* Redirect elimination may remove intentional canonicalization
-* External link removal affects topical relevance signals
-
-By requiring manual approval, Link Health ensures that site maintainers make informed decisions about each link change.
+---
 
 ## Performance and Safety
 
-Link Health is designed for production WordPress environments:
+### Frontend Performance
 
-**Frontend Performance**
+- No frontend JavaScript or CSS
+- No public-facing routes
+- Admin-only execution with capability checks
 
-* Zero frontend JavaScript or CSS loading
-* No public-facing functionality or route handlers
-* Admin-only codebase with capability checks
+### Database Design
 
-**Database Design**
+- Custom tables for scan data
+- Indexed columns for efficient queries
+- Optional cleanup on uninstall
 
-* Custom tables for scan data (not post meta or options table)
-* Indexed columns for efficient querying
-* Optional cleanup on uninstall to prevent database bloat
+### Security
 
-**Security**
+- Nonce verification for all AJAX requests
+- Capability checks on all admin actions
+- Prepared statements for database queries
+- Escaped output for all rendered data
 
-* All AJAX handlers verify WordPress nonces
-* Capability checks on all admin functions
-* Prepared statements for all database queries
-* No user input rendered without escaping
+### Compatibility
 
-**Compatibility**
-
-* Works with all public post types (posts, pages, custom post types)
-* Compatible with common page builders (Gutenberg, Classic Editor)
-* Extracts links from post_content field without requiring specific editor formats
-* No conflicts with caching plugins (scans happen in admin, not frontend)
+- Works with posts, pages, and custom post types
+- Compatible with Gutenberg and Classic Editor
+- No conflicts with caching plugins
 
 ## Screenshots
 
-**Screenshot 1: Internal Link Issues**
+### Internal Link Issues
+![Internal Link Issues](assets/screenshot-1.png)
 
-The Internal Links view displays detected redirects and errors in a sortable table. Each row shows the source post, anchor text, current URL, destination (for redirects), HTTP status code, and action buttons. The interface provides quick access to edit the source post, apply a fix to update the URL, or ignore the issue.
+The Internal Links view displays detected redirects and errors in a sortable table. Each row shows the source post, anchor text, current URL, destination (for redirects), HTTP status code, and action buttons.
 
-**Screenshot 2: External Link Errors**
+---
 
-External Errors view lists broken outbound links with source post information, anchor text, broken URL, and HTTP status code. Administrators can review each broken link and decide whether to update, remove, or ignore it based on editorial judgment.
+### External Link Errors
+![External Link Errors](assets/screenshot-2.png)
 
-**Screenshot 3: Link Intelligence Analysis**
+External Errors view lists broken outbound links with source post information, anchor text, broken URL, and HTTP status code.
 
-The Intelligence view shows most-linked internal pages ranked by inbound link count. Each entry can be expanded to show which posts link to it and what anchor texts are used. This provides strategic insights into content interconnectedness and helps identify pillar pages or orphaned content.
+---
 
-**Screenshot 4: External Domains**
+### Link Intelligence Analysis
+![Link Intelligence Analysis](assets/screenshot-3.png)
 
-External Domains intelligence reveals which external websites receive the most outbound links from your content. Expandable details show source posts and anchor text distribution for each domain, enabling analysis of citation patterns and external link diversity.
+The Intelligence view shows most-linked internal pages ranked by inbound link count, with expandable details.
 
-**Screenshot 5: Scan History**
+---
 
-Scan History tracks all completed scans with details about scan type, configuration (which post types were scanned), total items processed, issues found, and timestamps. This audit trail helps teams track maintenance activities and measure link health improvements over time.
+### External Domains
+![External Domains](assets/screenshot-4.png)
+
+External Domains intelligence reveals which external websites receive the most outbound links from your content.
+
+---
+
+### Scan History
+![Scan History](assets/screenshot-5.png)
+
+Scan History tracks completed scans, configurations, and results over time.
 
 ## Data Handling and Privacy
 
