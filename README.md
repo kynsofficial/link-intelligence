@@ -6,8 +6,6 @@
 
 Production-grade link analysis and intelligence engine for WordPress. Monitor internal and external link health, detect broken links and redirects, and gain editorial link intelligence without automatic content modifications.
 
----
-
 ## Overview
 
 Link Health is a comprehensive link monitoring and analysis tool built for editorial teams, SEO professionals, and site maintainers who need complete visibility into a WordPress site’s link structure.
@@ -27,8 +25,6 @@ The plugin scans WordPress content to identify three categories of information:
 
 All fixes require explicit administrator action. No content is modified automatically.
 
----
-
 ## Why Link Health Matters
 
 Links degrade over time. Internal restructuring introduces redirect chains. External websites move, change ownership, or shut down. Content evolves, but link references often remain static.
@@ -42,8 +38,6 @@ These issues compound into measurable problems:
 - Over-linking to specific domains may trigger spam filters
 
 Link Health addresses these problems through controlled auditing and review workflows rather than automated replacements.
-
----
 
 ## Internal Link Health
 
@@ -80,8 +74,6 @@ For every detected issue, Link Health displays:
 
 Administrators can edit the source post, apply a URL replacement, or ignore the issue.
 
----
-
 ## External Link Errors
 
 The External Links scanner validates outbound links to third-party domains.
@@ -99,8 +91,6 @@ External URL validation uses the WordPress HTTP API with transient caching. URLs
 
 The plugin does not automatically replace external URLs. Editorial review is required.
 
----
-
 ## Link Intelligence Analysis
 
 Beyond error detection, Link Health provides insight into how content is interconnected.
@@ -115,8 +105,6 @@ Identifies pages receiving the highest number of inbound internal links. This he
 
 Results include inbound link counts and expandable details showing source posts and anchor text usage.
 
----
-
 ### External Domains
 
 Groups outbound links by destination domain to reveal:
@@ -127,8 +115,6 @@ Groups outbound links by destination domain to reveal:
 
 Detailed views show which posts link to each domain and the anchor texts used.
 
----
-
 ### Anchor Text Patterns
 
 Analyzes anchor text usage across the site to identify:
@@ -138,8 +124,6 @@ Analyzes anchor text usage across the site to identify:
 - Opportunities for more natural phrasing
 
 This supports editorial consistency and content quality.
-
----
 
 ## Scan Engine Design
 
@@ -164,8 +148,6 @@ There is no frontend crawling and no background content mutation.
 - Caching to reduce redundant HTTP requests
 
 Large sites may require longer scan times, but scans remain safe and transparent.
-
----
 
 ## Performance and Safety
 
@@ -201,28 +183,25 @@ Large sites may require longer scan times, but scans remain safe and transparent
 
 The Internal Links view displays detected redirects and errors in a sortable table. Each row shows the source post, anchor text, current URL, destination (for redirects), HTTP status code, and action buttons.
 
----
-
 ### External Link Errors
 ![External Link Errors](assets/screenshot-2.png)
 
 External Errors view lists broken outbound links with source post information, anchor text, broken URL, and HTTP status code.
 
----
 
 ### Link Intelligence Analysis
 ![Link Intelligence Analysis](assets/screenshot-3.png)
 
 The Intelligence view shows most-linked internal pages ranked by inbound link count, with expandable details.
 
----
+
 
 ### External Domains
 ![External Domains](assets/screenshot-4.png)
 
 External Domains intelligence reveals which external websites receive the most outbound links from your content.
 
----
+
 
 ### Scan History
 ![Scan History](assets/screenshot-5.png)
