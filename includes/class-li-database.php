@@ -165,7 +165,7 @@ class LI_Database {
         
         // Handle overlapping post types from previous scans
         self::cleanup_overlapping_scan_data($data['scan_type'], $data['scan_config']);
-
+        
         // Insert new scan
         $insert_data = array(
             'scan_type' => $data['scan_type'],
@@ -175,17 +175,17 @@ class LI_Database {
             'issues_found' => isset($data['issues_found']) ? $data['issues_found'] : 0,
             'status' => 'running'
         );
-
+        
         $wpdb->insert($table, $insert_data);
         return $wpdb->insert_id;
     }
-
+    
     public static function update_scan($scan_id, $data) {
         global $wpdb;
         $table = $wpdb->prefix . 'li_scans';
-
+        
         $update_data = array();
-
+        
         if (isset($data['total_posts'])) {
             $update_data['total_posts'] = $data['total_posts'];
         }
@@ -198,111 +198,111 @@ class LI_Database {
         if (isset($data['completed_at'])) {
             $update_data['completed_at'] = $data['completed_at'];
         }
-
+        
         return $wpdb->update($table, $update_data, array('id' => $scan_id));
     }
-
+    
     public static function delete_scan($scan_id) {
         global $wpdb;
-
+        
         // Delete all issues for this scan
         $wpdb->delete($wpdb->prefix . 'li_issues', array('scan_id' => $scan_id));
-
+        
         // Delete all ignored issues for this scan
         $wpdb->delete($wpdb->prefix . 'li_ignored', array('scan_id' => $scan_id));
-
+        
         // Delete all intelligence for this scan
         $wpdb->delete($wpdb->prefix . 'li_intelligence', array('scan_id' => $scan_id));
-
+        
         // Delete scan state if exists
         $wpdb->delete($wpdb->prefix . 'li_scan_state', array('scan_id' => $scan_id));
-
+        
         // Delete the scan itself
         return $wpdb->delete($wpdb->prefix . 'li_scans', array('id' => $scan_id));
     }
-
+    
     /**
      * Cleanup overlapping post type data from previous scans
-     *
+     * 
      * When starting a new scan with multiple post types, this removes
      * data for those specific post types from all previous scans of the same type.
-     *
+     * 
      * Example: If previous scan was [Post, Page, Course] and new scan is [Product, Page, Course],
      * this will delete Page and Course data from the previous scan, keeping Post data intact.
      */
     private static function cleanup_overlapping_scan_data($scan_type, $scan_config) {
         global $wpdb;
-
+        
         // Extract content types from new scan config
         if (!isset($scan_config['content_type'])) {
             return;
         }
-
-        $new_content_types = is_array($scan_config['content_type'])
-            ? $scan_config['content_type']
+        
+        $new_content_types = is_array($scan_config['content_type']) 
+            ? $scan_config['content_type'] 
             : array($scan_config['content_type']);
-
+        
         if (empty($new_content_types)) {
             return;
         }
-
+        
         // Get all previous scans of the same type
         $table_scans = $wpdb->prefix . 'li_scans';
         $previous_scans = $wpdb->get_results($wpdb->prepare(
             "SELECT id, scan_config FROM $table_scans WHERE scan_type = %s",
             $scan_type
         ), ARRAY_A);
-
+        
         if (empty($previous_scans)) {
             return;
         }
-
+        
         // For each previous scan, check for overlapping post types
         foreach ($previous_scans as $prev_scan) {
             $prev_config = json_decode($prev_scan['scan_config'], true);
-
+            
             if (!isset($prev_config['content_type'])) {
                 continue;
             }
-
-            $prev_content_types = is_array($prev_config['content_type'])
-                ? $prev_config['content_type']
+            
+            $prev_content_types = is_array($prev_config['content_type']) 
+                ? $prev_config['content_type'] 
                 : array($prev_config['content_type']);
-
+            
             // Find overlapping post types
             $overlapping_types = array_intersect($new_content_types, $prev_content_types);
-
+            
             if (!empty($overlapping_types)) {
                 // Delete issues for overlapping post types from this previous scan
                 self::delete_issues_by_post_types($prev_scan['id'], $overlapping_types);
             }
         }
     }
-
+    
     /**
      * Delete issues for specific post types from a scan
      */
     private static function delete_issues_by_post_types($scan_id, $post_types) {
         global $wpdb;
-
+        
         if (empty($post_types)) {
             return;
         }
-
+        
         $table_issues = $wpdb->prefix . 'li_issues';
         $table_ignored = $wpdb->prefix . 'li_ignored';
         $table_intelligence = $wpdb->prefix . 'li_intelligence';
-
+        
         // Build WHERE clause for post types
         $placeholders = implode(',', array_fill(0, count($post_types), '%s'));
         $where_values = array_merge(array($scan_id), $post_types);
-
+        
         // Get issue IDs that match these post types
         $issue_ids = $wpdb->get_col($wpdb->prepare(
             "SELECT id FROM $table_issues WHERE scan_id = %d AND post_type IN ($placeholders)",
             $where_values
         ));
-
+        
         if (!empty($issue_ids)) {
             // Delete from ignored table first (foreign key constraint)
             $id_placeholders = implode(',', array_fill(0, count($issue_ids), '%d'));
@@ -311,13 +311,13 @@ class LI_Database {
                 $issue_ids
             ));
         }
-
+        
         // Delete issues for these post types
         $wpdb->query($wpdb->prepare(
             "DELETE FROM $table_issues WHERE scan_id = %d AND post_type IN ($placeholders)",
             $where_values
         ));
-
+        
         // Delete intelligence data for these post types (if post_id is set)
         $wpdb->query($wpdb->prepare(
             "DELETE FROM $table_intelligence WHERE scan_id = %d AND post_id IN (
@@ -325,13 +325,13 @@ class LI_Database {
             )",
             $where_values
         ));
-
+        
         // Update the scan's issue count
         $remaining_issues = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table_issues WHERE scan_id = %d",
             $scan_id
         ));
-
+        
         self::update_scan($scan_id, array(
             'issues_found' => (int) $remaining_issues
         ));

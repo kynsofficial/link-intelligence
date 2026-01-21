@@ -50,7 +50,7 @@ class LI_Internal_Link_Scanner extends LI_Scanner {
             'current_post_title' => '',
             'current_post_urls' => array(),    // URLs extracted from current post
             'current_url_index' => 0,
-            'checked_urls' => array(),          // Already checked URLs (avoid duplicates)
+            'url_check_cache' => array(),       // Cache check results to avoid re-checking same URLs
             'unique_issue_urls' => array(),     // Track unique issue URLs for accurate counting
             'total_urls_checked' => 0,
             'issues_found' => 0,
@@ -163,8 +163,9 @@ class LI_Internal_Link_Scanner extends LI_Scanner {
         $base_url = get_site_url();
         $links = $this->extract_links($post->post_content, $base_url);
         
-        // Filter to only internal links and remove already-checked URLs
+        // Filter to only internal links (remove duplicates within same post only)
         $internal_urls = array();
+        $seen_in_post = array();
         foreach ($links as $link) {
             $url = $link['url'];
             
@@ -172,11 +173,12 @@ class LI_Internal_Link_Scanner extends LI_Scanner {
                 continue;
             }
             
-            // Skip if already checked globally (same URL in different posts)
-            if (isset($state['checked_urls'][$url])) {
+            // Avoid duplicate entries within the SAME post
+            if (isset($seen_in_post[$url])) {
                 continue;
             }
             
+            $seen_in_post[$url] = true;
             $internal_urls[] = $link;
         }
         
@@ -201,79 +203,103 @@ class LI_Internal_Link_Scanner extends LI_Scanner {
         $url = $link['url'];
         $anchor_text = $link['anchor_text'];
         
-        // Mark URL as checked globally
-        $state['checked_urls'][$url] = true;
         $state['current_url_index']++;
         $state['total_urls_checked']++;
         
-        // Step 1: Native WordPress check (fast, no HTTP)
-        $native_result = $this->check_url_native($url);
+        // Check if we already checked this URL in this scan
+        $use_cached_result = isset($state['url_check_cache'][$url]);
         
-        $issue_found = false;
-        $issue_type = null;
-        $status_code = 200;
-        $destination_url = null;
-        $is_fixable = 0;
-        
-        if ($native_result['is_error']) {
-            // Native check found 404
-            $issue_found = true;
-            $issue_type = $native_result['issue_type'];
-            $status_code = 404;
+        if ($use_cached_result) {
+            // Use cached result - no need to re-check
+            $cached = $state['url_check_cache'][$url];
+            $issue_found = $cached['issue_found'];
+            $issue_type = $cached['issue_type'];
+            $status_code = $cached['status_code'];
+            $destination_url = $cached['destination_url'];
+            $is_fixable = $cached['is_fixable'];
             
-            if ($issue_type === '404_trashed') {
-                $log[] = "Problem found: Trashed post linked - {$url}";
-            } elseif ($issue_type === '404_not_published') {
-                $log[] = "Problem found: Unpublished post linked - {$url}";
-            } else {
-                $log[] = "Problem found: 404 Not Found (native check) - {$url}";
-            }
+            $log[] = "Processing: Using cached result for {$url}";
             
-        } elseif ($native_result['needs_http']) {
-            // URL exists in WordPress - check for redirects via HTTP
-            $log[] = "Scanning: Checking redirect status for {$url}";
-            
-            $http_result = $this->check_url($url, false);
-            $status_code = $http_result['status_code'];
-            
-            if (in_array($status_code, array(301, 302, 307, 308))) {
-                $issue_found = true;
-                $issue_type = (string) $status_code;
-                $destination_url = isset($http_result['redirect_url']) ? $http_result['redirect_url'] : null;
-                $is_fixable = !empty($destination_url) ? 1 : 0;
-                $log[] = "Found: {$status_code} Redirect detected → {$destination_url}";
-                
-            } elseif ($status_code === 404) {
-                $issue_found = true;
-                $issue_type = '404';
-                $log[] = "Problem found: 404 Not Found (HTTP check) - {$url}";
-                
-            } elseif ($status_code === 410) {
-                $issue_found = true;
-                $issue_type = '410';
-                $log[] = "Problem found: 410 Gone (permanently deleted) - {$url}";
-                
-            } elseif ($status_code >= 500) {
-                $issue_found = true;
-                $issue_type = 'server_error';
-                $log[] = "Problem found: {$status_code} Server Error - {$url}";
-                
-            } elseif ($status_code === 0) {
-                // Connection error - but we know the post exists
-                // This might be a timeout, skip it rather than false positive
-                $log[] = "Processing: Connection timeout (skipped) - {$url}";
-            } else {
-                // URL is OK
-                $log[] = "Completed: ✓ Link verified OK - {$url}";
-            }
         } else {
-            // System URL, media file, or known OK URL - skipped
-            $log[] = "Processing: System/Media URL (skipped) - {$url}";
+            // First time checking this URL - do actual check
+            $issue_found = false;
+            $issue_type = null;
+            $status_code = 200;
+            $destination_url = null;
+            $is_fixable = 0;
+            
+            // Step 1: Native WordPress check (fast, no HTTP)
+            $native_result = $this->check_url_native($url);
+            
+            if ($native_result['is_error']) {
+                // Native check found 404
+                $issue_found = true;
+                $issue_type = $native_result['issue_type'];
+                $status_code = 404;
+                
+                if ($issue_type === '404_trashed') {
+                    $log[] = "Problem found: Trashed post linked - {$url}";
+                } elseif ($issue_type === '404_not_published') {
+                    $log[] = "Problem found: Unpublished post linked - {$url}";
+                } else {
+                    $log[] = "Problem found: 404 Not Found (native check) - {$url}";
+                }
+                
+            } elseif ($native_result['needs_http']) {
+                // URL exists in WordPress - check for redirects via HTTP
+                $log[] = "Scanning: Checking redirect status for {$url}";
+                
+                $http_result = $this->check_url($url, false);
+                $status_code = $http_result['status_code'];
+                
+                if (in_array($status_code, array(301, 302, 307, 308))) {
+                    $issue_found = true;
+                    $issue_type = (string) $status_code;
+                    $destination_url = isset($http_result['redirect_url']) ? $http_result['redirect_url'] : null;
+                    $is_fixable = !empty($destination_url) ? 1 : 0;
+                    $log[] = "Found: {$status_code} Redirect detected → {$destination_url}";
+                    
+                } elseif ($status_code === 404) {
+                    $issue_found = true;
+                    $issue_type = '404';
+                    $log[] = "Problem found: 404 Not Found (HTTP check) - {$url}";
+                    
+                } elseif ($status_code === 410) {
+                    $issue_found = true;
+                    $issue_type = '410';
+                    $log[] = "Problem found: 410 Gone (permanently deleted) - {$url}";
+                    
+                } elseif ($status_code >= 500) {
+                    $issue_found = true;
+                    $issue_type = 'server_error';
+                    $log[] = "Problem found: {$status_code} Server Error - {$url}";
+                    
+                } elseif ($status_code === 0) {
+                    // Connection error - but we know the post exists
+                    // This might be a timeout, skip it rather than false positive
+                    $log[] = "Processing: Connection timeout (skipped) - {$url}";
+                } else {
+                    // URL is OK
+                    $log[] = "Completed: ✓ Link verified OK - {$url}";
+                }
+            } else {
+                // System URL, media file, or known OK URL - skipped
+                $log[] = "Processing: System/Media URL (skipped) - {$url}";
+            }
+            
+            // Cache the result for future occurrences of this URL
+            $state['url_check_cache'][$url] = array(
+                'issue_found' => $issue_found,
+                'issue_type' => $issue_type,
+                'status_code' => $status_code,
+                'destination_url' => $destination_url,
+                'is_fixable' => $is_fixable
+            );
         }
         
-        // Save issue if found
+        // Save issue if found (ALWAYS add to database for current post)
         if ($issue_found) {
-            // Always add to database (tracks all occurrences across posts)
+            // Add to database for THIS post
             LI_Database::add_issue(array(
                 'scan_id' => $this->scan_id,
                 'scan_type' => $this->scan_type,
@@ -298,8 +324,8 @@ class LI_Internal_Link_Scanner extends LI_Scanner {
                 $state['issues_found']++;
                 $issues_found = 1;
             } else {
-                // Duplicate issue - same problem in different post
-                $log[] = "Processing: Duplicate issue (already counted) in another post";
+                // Duplicate issue - same problem in different post (but still added to database)
+                $log[] = "Processing: Same issue found in another post (added to database)";
             }
         }
         
@@ -437,14 +463,22 @@ class LI_Internal_Link_Scanner extends LI_Scanner {
     }
     
     protected function complete_scan($state) {
+        global $wpdb;
         $state['status'] = 'completed';
         $state['completed_at'] = current_time('mysql');
         update_option('li_scan_state', $state, false);
         
+        // Count ALL pending issues from database (not just unique ones)
+        $issues_table = $wpdb->prefix . 'li_issues';
+        $actual_issues_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $issues_table WHERE scan_id = %d AND status = 'pending'",
+            $this->scan_id
+        ));
+        
         LI_Database::update_scan($this->scan_id, array(
             'status' => 'completed',
             'completed_at' => current_time('mysql'),
-            'issues_found' => $state['issues_found']
+            'issues_found' => $actual_issues_count
         ));
         
         return array(
@@ -454,7 +488,7 @@ class LI_Internal_Link_Scanner extends LI_Scanner {
             'state' => array(
                 'current' => $state['total_posts'],
                 'total' => $state['total_posts'],
-                'issues_found' => $state['issues_found']
+                'issues_found' => $actual_issues_count
             ),
             'progress' => 100
         );

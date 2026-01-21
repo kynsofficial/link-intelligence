@@ -526,6 +526,16 @@
     cursor: pointer;
 }
 
+.li-table-checkbox input[type="checkbox"]:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.li-issue-checkbox:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 /* Modal */
 .li-modal {
     position: fixed;

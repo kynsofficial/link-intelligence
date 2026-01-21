@@ -128,10 +128,11 @@ class LI_Fixer {
             );
         }
         
-        // Create lightweight state - NO issues array
+        // Create lightweight state - track processed IDs instead of using offset
         $state = array(
             'scan_type' => $scan_type,
             'issue_ids' => $issue_ids, // Empty or specific IDs
+            'processed_ids' => array(), // Track which IDs we've already processed
             'total' => (int)$total,
             'current' => 0,
             'fixed' => 0,
@@ -162,23 +163,19 @@ class LI_Fixer {
             return self::complete_bulk_fix($state);
         }
         
-        // Get ONLY the next issue to process (one at a time)
-        $issue = self::get_next_fixable_issue($state['scan_type'], $state['issue_ids'], $state['current']);
+        // Get the next issue to process, excluding already processed IDs
+        $issue = self::get_next_fixable_issue($state['scan_type'], $state['issue_ids'], $state['processed_ids']);
         
         if (!$issue) {
-            // Skip and move to next
-            $state['current']++;
-            set_transient('li_bulk_fix_state', $state, 3600);
-            
-            if ($state['current'] < $state['total']) {
-                return self::continue_bulk_fix();
-            } else {
-                return self::complete_bulk_fix($state);
-            }
+            // No more issues found - complete
+            return self::complete_bulk_fix($state);
         }
         
         // Fix the issue
         $result = self::fix_link($issue['id']);
+        
+        // Add to processed IDs to avoid reprocessing
+        $state['processed_ids'][] = $issue['id'];
         
         // Free memory
         unset($issue);
@@ -212,32 +209,49 @@ class LI_Fixer {
     }
     
     /**
-     * Get next fixable issue using offset (one at a time)
+     * Get next fixable issue, excluding already processed IDs
      */
-    private static function get_next_fixable_issue($scan_type, $issue_ids, $offset) {
+    private static function get_next_fixable_issue($scan_type, $issue_ids, $processed_ids) {
         global $wpdb;
         $table = $wpdb->prefix . 'li_issues';
         
         if (!empty($issue_ids)) {
-            // Get from specific issue IDs
-            $placeholders = implode(',', array_fill(0, count($issue_ids), '%d'));
+            // Get from specific issue IDs, excluding processed ones
+            $available_ids = array_diff($issue_ids, $processed_ids);
+            
+            if (empty($available_ids)) {
+                return null;
+            }
+            
+            $placeholders = implode(',', array_fill(0, count($available_ids), '%d'));
             $issue = $wpdb->get_row($wpdb->prepare(
                 "SELECT * FROM $table 
                  WHERE id IN ($placeholders) AND is_fixable = 1 AND status = 'pending'
                  ORDER BY id ASC
-                 LIMIT 1 OFFSET %d",
-                array_merge($issue_ids, array($offset))
+                 LIMIT 1",
+                array_values($available_ids)
             ), ARRAY_A);
         } else {
-            // Get from all fixable issues
-            $issue = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM $table 
-                 WHERE scan_type = %s AND is_fixable = 1 AND status = 'pending'
-                 ORDER BY id ASC
-                 LIMIT 1 OFFSET %d",
-                $scan_type,
-                $offset
-            ), ARRAY_A);
+            // Get from all fixable issues, excluding processed ones
+            if (!empty($processed_ids)) {
+                $exclude_placeholders = implode(',', array_fill(0, count($processed_ids), '%d'));
+                $query_params = array_merge(array($scan_type), $processed_ids);
+                $issue = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM $table 
+                     WHERE scan_type = %s AND id NOT IN ($exclude_placeholders) AND is_fixable = 1 AND status = 'pending'
+                     ORDER BY id ASC
+                     LIMIT 1",
+                    $query_params
+                ), ARRAY_A);
+            } else {
+                $issue = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM $table 
+                     WHERE scan_type = %s AND is_fixable = 1 AND status = 'pending'
+                     ORDER BY id ASC
+                     LIMIT 1",
+                    $scan_type
+                ), ARRAY_A);
+            }
         }
         
         return $issue;
