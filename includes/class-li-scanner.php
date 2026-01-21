@@ -247,28 +247,60 @@ abstract class LI_Scanner {
     }
     
     /**
-     * Check a single URL - simple and direct
+     * Check a single URL - with fallback and retry for better reliability
      */
     protected function check_url($url, $follow_redirects = false) {
+        // Remove fragment identifier for checking (not sent to server anyway)
+        $url_without_fragment = preg_replace('/#.*$/', '', $url);
+        
         $args = array(
-            'timeout' => 10,
+            'timeout' => 15,
             'redirection' => $follow_redirects ? 5 : 0,
             'sslverify' => false,
             'headers' => array(
-                'User-Agent' => 'Link Intelligence Scanner/1.0'
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             )
         );
         
-        $response = wp_remote_head($url, $args);
+        // Try HEAD request first (faster)
+        $response = wp_remote_head($url_without_fragment, $args);
         
+        // If HEAD fails or returns error, try GET request as fallback
         if (is_wp_error($response)) {
-            return array(
-                'status_code' => 0,
-                'error' => $response->get_error_message()
-            );
+            // Retry with GET request - some servers block HEAD requests
+            $response = wp_remote_get($url_without_fragment, $args);
+            
+            // If GET also fails, try one more time after brief delay
+            if (is_wp_error($response)) {
+                sleep(1);
+                $response = wp_remote_get($url_without_fragment, $args);
+                
+                if (is_wp_error($response)) {
+                    return array(
+                        'status_code' => 0,
+                        'error' => $response->get_error_message()
+                    );
+                }
+            }
         }
         
         $status_code = wp_remote_retrieve_response_code($response);
+        
+        // If HEAD returned certain status codes that might be false, verify with GET
+        if (in_array($status_code, array(403, 405, 501)) && !is_wp_error($response)) {
+            // These status codes from HEAD might be unreliable, try GET
+            $get_response = wp_remote_get($url_without_fragment, $args);
+            
+            if (!is_wp_error($get_response)) {
+                $get_status = wp_remote_retrieve_response_code($get_response);
+                // If GET succeeds but HEAD didn't, use GET result
+                if ($get_status >= 200 && $get_status < 400) {
+                    $response = $get_response;
+                    $status_code = $get_status;
+                }
+            }
+        }
+        
         $headers = wp_remote_retrieve_headers($response);
         
         $result = array(

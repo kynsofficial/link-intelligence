@@ -85,11 +85,21 @@
         
         handleSelectAll: function(e) {
             const isChecked = $(e.target).is(':checked');
-            $('.li-issue-checkbox').prop('checked', isChecked);
+            
+            // Build section selector based on current scan type
+            let sectionSelector = '';
+            if (this.currentScanType) {
+                const sectionId = `#li-section-${this.currentScanType.replace(/_/g, '-')}`;
+                sectionSelector = `${sectionId} `;
+            }
+            
+            // Only select enabled (fixable) checkboxes in the current visible section
+            $(`${sectionSelector}.li-issue-checkbox:not(:disabled)`).prop('checked', isChecked);
             
             if (isChecked) {
                 this.selectedIssues = [];
-                $('.li-issue-checkbox').each((i, el) => {
+                // Only add enabled (fixable) checkboxes from current section to selection
+                $(`${sectionSelector}.li-issue-checkbox:not(:disabled)`).each((i, el) => {
                     this.selectedIssues.push(parseInt($(el).data('issue-id')));
                 });
             } else {
@@ -101,7 +111,16 @@
         
         handleBulkSelectAll: function(e) {
             const isChecked = $(e.target).is(':checked');
-            $('.li-select-all-header').prop('checked', isChecked).trigger('change');
+            
+            // Build section selector based on current scan type
+            let sectionSelector = '';
+            if (this.currentScanType) {
+                const sectionId = `#li-section-${this.currentScanType.replace(/_/g, '-')}`;
+                sectionSelector = `${sectionId} `;
+            }
+            
+            // Only trigger the header checkbox in the current section
+            $(`${sectionSelector}.li-select-all-header`).prop('checked', isChecked).trigger('change');
         },
         
         handleScanSelect: function(e) {
@@ -144,11 +163,9 @@
             const count = this.selectedIssues.length;
             $('.li-selected-count').text(`${count} selected`);
             
-            if (count > 0) {
-                $('.li-bulk-actions-bar').removeClass('li-hidden');
-            } else {
-                $('.li-bulk-actions-bar').addClass('li-hidden');
-            }
+            // Always show the bulk actions bar when issues exist
+            // Users need to see these buttons to know they exist
+            $('.li-bulk-actions-bar').removeClass('li-hidden');
         },
         
         updateScanBulkActionsBar: function() {
@@ -254,7 +271,9 @@
             this.currentScanType = scanType;
             this.currentMetricType = null;
             
-            const $table = $('.li-issues-table');
+            // Only target the table in the current section
+            const sectionId = `#li-section-${scanType.replace(/_/g, '-')}`;
+            const $table = $(`${sectionId} .li-issues-table`);
             
             const isInternalLinks = scanType === 'internal_links';
             const hasCheckbox = scanType !== 'external_errors';
@@ -283,7 +302,13 @@
                         LI_Admin.DataRender.renderPagination(response.data, $('.li-pagination'));
                         
                         this.selectedIssues = [];
-                        this.updateBulkActionsBar();
+                        
+                        // Hide bulk actions bar when no issues, otherwise show it
+                        if (!response.data.issues || response.data.issues.length === 0) {
+                            $('.li-bulk-actions-bar').addClass('li-hidden');
+                        } else {
+                            this.updateBulkActionsBar();
+                        }
                     }
                 },
                 error: () => {
@@ -369,14 +394,11 @@
         },
         
         loadScanHistory: function(page = 1) {
-            console.log('loadScanHistory called with page:', page);
-            
             this.currentPage = page;
             this.currentScanType = null;
             this.currentMetricType = null;
             
             const $table = $('.li-scan-history-table');
-            console.log('Table element found:', $table.length);
             
             if ($table.length === 0) {
                 console.error('Scan history table not found in DOM');
@@ -397,7 +419,6 @@
                     sort_order: this.sortOrder
                 },
                 success: (response) => {
-                    console.log('Scan history response:', response);
                     if (response.success) {
                         LI_Admin.DataRender.renderScanHistory(response.data, $table);
                         LI_Admin.DataRender.renderPagination(response.data, $('.li-pagination'));

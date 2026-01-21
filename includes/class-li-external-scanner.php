@@ -50,7 +50,7 @@ class LI_External_Scanner extends LI_Scanner {
             'current_post_title' => '',
             'current_post_urls' => array(),
             'current_url_index' => 0,
-            'checked_urls' => array(),
+            'url_check_cache' => array(),       // Cache check results to avoid re-checking same URLs
             'unique_issue_urls' => array(),     // Track unique issue URLs for accurate counting
             'total_urls_checked' => 0,
             'issues_found' => 0,
@@ -157,8 +157,9 @@ class LI_External_Scanner extends LI_Scanner {
         $base_url = get_site_url();
         $links = $this->extract_links($post->post_content, $base_url);
         
-        // Filter to only external links
+        // Filter to only external links (remove duplicates within same post only)
         $external_urls = array();
+        $seen_in_post = array();
         foreach ($links as $link) {
             $url = $link['url'];
             
@@ -167,11 +168,12 @@ class LI_External_Scanner extends LI_Scanner {
                 continue;
             }
             
-            // Skip if already checked
-            if (isset($state['checked_urls'][$url])) {
+            // Avoid duplicate entries within the SAME post
+            if (isset($seen_in_post[$url])) {
                 continue;
             }
             
+            $seen_in_post[$url] = true;
             $external_urls[] = $link;
         }
         
@@ -195,56 +197,78 @@ class LI_External_Scanner extends LI_Scanner {
         $url = $link['url'];
         $anchor_text = $link['anchor_text'];
         
-        $state['checked_urls'][$url] = true;
         $state['current_url_index']++;
         $state['total_urls_checked']++;
         
-        // Extract domain for log
-        $domain = wp_parse_url($url, PHP_URL_HOST);
-        $log[] = "Scanning: Checking external link at {$domain}...";
+        // Check if we already checked this URL in this scan
+        $use_cached_result = isset($state['url_check_cache'][$url]);
         
-        // Check external URL via HTTP
-        $http_result = $this->check_url($url, false);
-        $status_code = $http_result['status_code'];
-        
-        $issue_found = false;
-        $issue_type = null;
-        
-        if ($status_code === 404) {
-            $issue_found = true;
-            $issue_type = 'external_404';
-            $log[] = "Problem found: 404 Not Found - {$url}";
+        if ($use_cached_result) {
+            // Use cached result - no need to re-check
+            $cached = $state['url_check_cache'][$url];
+            $issue_found = $cached['issue_found'];
+            $issue_type = $cached['issue_type'];
+            $status_code = $cached['status_code'];
             
-        } elseif ($status_code === 410) {
-            $issue_found = true;
-            $issue_type = 'external_gone';
-            $log[] = "Problem found: 410 Gone (permanently removed) - {$url}";
-            
-        } elseif ($status_code >= 500 && $status_code < 600) {
-            $issue_found = true;
-            $issue_type = 'external_server_error';
-            $log[] = "Problem found: {$status_code} Server Error - {$url}";
-            
-        } elseif ($status_code === 0) {
-            $issue_found = true;
-            $issue_type = 'external_unreachable';
-            $log[] = "Failed: Connection timeout or unreachable - {$url}";
-            
-        } elseif ($status_code >= 200 && $status_code < 300) {
-            // Success
-            $log[] = "Completed: ✓ External link OK ({$status_code}) - {$domain}";
-            
-        } elseif ($status_code >= 300 && $status_code < 400) {
-            // Redirect (not necessarily a problem for external links)
-            $log[] = "Completed: External redirect ({$status_code}) - {$domain}";
+            $domain = wp_parse_url($url, PHP_URL_HOST);
+            $log[] = "Processing: Using cached result for {$domain}";
             
         } else {
-            // Other status codes
-            $log[] = "Processing: Received status {$status_code} from {$domain}";
+            // First time checking this URL - do actual check
+            $issue_found = false;
+            $issue_type = null;
+            
+            // Extract domain for log
+            $domain = wp_parse_url($url, PHP_URL_HOST);
+            $log[] = "Scanning: Checking external link at {$domain}...";
+            
+            // Check external URL via HTTP
+            $http_result = $this->check_url($url, false);
+            $status_code = $http_result['status_code'];
+            
+            if ($status_code === 404) {
+                $issue_found = true;
+                $issue_type = 'external_404';
+                $log[] = "Problem found: 404 Not Found - {$url}";
+                
+            } elseif ($status_code === 410) {
+                $issue_found = true;
+                $issue_type = 'external_gone';
+                $log[] = "Problem found: 410 Gone (permanently removed) - {$url}";
+                
+            } elseif ($status_code >= 500 && $status_code < 600) {
+                $issue_found = true;
+                $issue_type = 'external_server_error';
+                $log[] = "Problem found: {$status_code} Server Error - {$url}";
+                
+            } elseif ($status_code === 0) {
+                $issue_found = true;
+                $issue_type = 'external_unreachable';
+                $log[] = "Failed: Connection timeout or unreachable - {$url}";
+                
+            } elseif ($status_code >= 200 && $status_code < 300) {
+                // Success
+                $log[] = "Completed: ✓ External link OK ({$status_code}) - {$domain}";
+                
+            } elseif ($status_code >= 300 && $status_code < 400) {
+                // Redirect (not necessarily a problem for external links)
+                $log[] = "Completed: External redirect ({$status_code}) - {$domain}";
+                
+            } else {
+                // Other status codes
+                $log[] = "Processing: Received status {$status_code} from {$domain}";
+            }
+            
+            // Cache the result for future occurrences of this URL
+            $state['url_check_cache'][$url] = array(
+                'issue_found' => $issue_found,
+                'issue_type' => $issue_type,
+                'status_code' => $status_code
+            );
         }
         
         if ($issue_found) {
-            // Always add to database (tracks all occurrences across posts)
+            // Add to database for THIS post
             LI_Database::add_issue(array(
                 'scan_id' => $this->scan_id,
                 'scan_type' => $this->scan_type,
@@ -269,8 +293,8 @@ class LI_External_Scanner extends LI_Scanner {
                 $state['issues_found']++;
                 $issues_found = 1;
             } else {
-                // Duplicate issue - same broken URL in different post
-                $log[] = "Processing: Duplicate issue (already counted) in another post";
+                // Duplicate issue - same broken URL in different post (but still added to database)
+                $log[] = "Processing: Same issue found in another post (added to database)";
             }
         }
         
@@ -282,14 +306,22 @@ class LI_External_Scanner extends LI_Scanner {
     }
     
     protected function complete_scan($state) {
+        global $wpdb;
         $state['status'] = 'completed';
         $state['completed_at'] = current_time('mysql');
         update_option('li_scan_state', $state, false);
         
+        // Count ALL pending issues from database (not just unique ones)
+        $issues_table = $wpdb->prefix . 'li_issues';
+        $actual_issues_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $issues_table WHERE scan_id = %d AND status = 'pending'",
+            $this->scan_id
+        ));
+        
         LI_Database::update_scan($this->scan_id, array(
             'status' => 'completed',
             'completed_at' => current_time('mysql'),
-            'issues_found' => $state['issues_found']
+            'issues_found' => $actual_issues_count
         ));
         
         return array(
@@ -299,7 +331,7 @@ class LI_External_Scanner extends LI_Scanner {
             'state' => array(
                 'current' => $state['total_posts'],
                 'total' => $state['total_posts'],
-                'issues_found' => $state['issues_found']
+                'issues_found' => $actual_issues_count
             ),
             'progress' => 100
         );
