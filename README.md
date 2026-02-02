@@ -125,6 +125,64 @@ Analyzes anchor text usage across the site to identify:
 
 This supports editorial consistency and content quality.
 
+## URL Redirects Management
+
+Link Health includes a comprehensive URL redirect management system for handling site restructuring, content migration, and URL changes.
+
+### Redirect Types Supported
+
+- **301 Permanent**: For permanently moved content
+- **302 Temporary**: For temporarily moved content  
+- **307 Temporary**: Temporary redirect maintaining request method
+- **308 Permanent**: Permanent redirect maintaining request method
+
+### Key Features
+
+- **Multiple Source URLs**: Add multiple source URLs redirecting to the same destination in one operation
+- **Source URL Uniqueness**: Each source URL can only exist once - duplicate prevention ensures clean redirect management
+- **Flexible Destinations**: Multiple redirects can share the same destination URL
+- **Bulk Operations**: Select and delete multiple redirects at once, or clear all redirects
+- **Category Organization**: Organize redirects using custom categories (e.g., "Migration", "SEO", "Restructure")
+- **Status Control**: Activate or deactivate redirects without deletion
+- **Edit Capability**: Modify existing redirects including sources, destination, type, and status
+
+### Source URL Management
+
+When adding redirects:
+- **Single or Multiple Sources**: Add one or multiple source URLs per redirect
+- **Uniqueness Check**: The system prevents duplicate source URLs across all redirects
+- **Edit Protection**: When editing, the plugin checks that new source URLs don't conflict with other existing redirects
+- **Grouped Display**: Multiple sources added in one operation display as a single row (hover to see all URLs)
+
+If you attempt to add a source URL that already exists, you'll be prompted to either:
+- Edit the existing redirect containing that source URL
+- Delete that source URL from its current redirect first
+
+### Redirect Display
+
+The redirects table shows:
+- Source URL(s) - truncated with count if multiple
+- Destination URL
+- Redirect type (301, 302, 307, 308)
+- Status (Active/Inactive)
+- Category
+- Creation date
+- Actions (Edit, Toggle Status, Delete)
+
+### Bulk Management
+
+- **Select Multiple**: Use checkboxes to select specific redirects
+- **Delete Selected**: Remove chosen redirects in one action
+- **Clear All**: Remove all redirects with confirmation
+
+### Categories
+
+- Display as checkboxes when adding/editing redirects
+- Select existing categories or enter new ones
+- Filter and organize large redirect collections
+
+Redirects execute before WordPress page rendering with proper HTTP status codes and header support.
+
 ## Scan Engine Design
 
 Scans are explicitly initiated by administrators and run entirely within the WordPress admin environment.

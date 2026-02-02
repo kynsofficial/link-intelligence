@@ -23,7 +23,6 @@
 }
 
 
-
 .li-wrap * {
     box-sizing: border-box;
 }
@@ -603,6 +602,73 @@
     margin-bottom: 24px;
 }
 
+/* Redirect Modal - Separate from main modal to avoid conflicts */
+.li-redirect-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.li-redirect-modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.li-redirect-modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+.li-redirect-modal.active .li-redirect-modal-content {
+    transform: scale(1);
+}
+
+.li-redirect-modal-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--li-border);
+}
+
+.li-redirect-modal-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--li-dark);
+}
+
+.li-redirect-modal-body {
+    padding: 28px;
+}
+
+.li-redirect-modal-footer {
+    padding: 20px 28px;
+    border-top: 1px solid var(--li-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Form Elements */
+.li-form-group {
+    margin-bottom: 24px;
+}
+
 .li-form-label {
     display: block;
     margin-bottom: 8px;
@@ -763,10 +829,12 @@
     color: var(--li-success);
 }
 
-.li-badge-warning {
-    background: rgb(185 97 16 / 10%);
-    color: #c79613;
+.li-badge-warning, .li-badge-secondary
+ {
+    background: rgb(243 182 16 / 18%);
+    color: #edb215;
 }
+
 
 #li-section-intelligence > div > div.li-card-body > div.li-intelligence-controls{
 padding: 15px;
@@ -1136,6 +1204,232 @@ padding: 15px;
 
 /* Responsive Design */
 @media (max-width: 782px) {
+    /* Main Header - Reduce padding on mobile */
+    .li-main-header {
+        padding: 20px 16px;
+        margin: 0 0 16px 0;
+    }
+    
+    .li-main-header h1 {
+        font-size: 20px;
+    }
+    
+    .li-main-header p {
+        font-size: 13px;
+    }
+    
+    /* Container - Stack layout on mobile */
+    .li-container {
+        flex-direction: column;
+        height: auto;
+        padding: 0 16px;
+    }
+    
+    /* Sidebar - Full width on mobile */
+    .li-sidebar {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 16px;
+        position: static;
+        height: auto;
+        border-radius: 6px;
+    }
+    
+    /* Main Content - Full width on mobile */
+    .li-main {
+        padding: 0 0 24px 0;
+    }
+    
+    /* Cards - Reduce padding */
+    .li-card-header {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .li-card-body {
+        padding: 16px;
+    }
+    
+    .li-card-title {
+        font-size: 16px;
+    }
+    
+    /* Filters Bar - Stack vertically */
+    .li-filters-bar {
+        padding: 16px;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .li-filter-group {
+        width: 100%;
+        min-width: 0;
+    }
+    
+    .li-filter-actions {
+        width: 100%;
+        margin-left: 0;
+        flex-wrap: wrap;
+    }
+    
+    .li-filter-actions .li-btn {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    /* Bulk Actions Bar - Stack buttons */
+    .li-bulk-actions-bar,
+    .li-bulk-actions-bar-history {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+    
+    .li-bulk-actions-left,
+    .li-bulk-actions-right {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    
+    /* Buttons - Full width on mobile */
+    .li-btn {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+    
+    .li-btn-sm {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+    
+    /* Progress Container */
+    .li-progress-container {
+        padding: 16px;
+    }
+    
+    .li-progress-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .li-progress-title {
+        font-size: 16px;
+    }
+    
+    .li-progress-info {
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 13px;
+    }
+    
+    .li-progress-percentage {
+        font-size: 20px;
+    }
+    
+    /* Execution Log */
+    .li-execution-log {
+        font-size: 12px;
+        padding: 12px;
+        max-height: 200px;
+    }
+    
+    /* Table wrapper - Enable horizontal scroll */
+    .li-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Tables - Reduce font size */
+    .li-table {
+        font-size: 13px;
+    }
+    
+    .li-table th,
+    .li-table td {
+        padding: 10px 8px;
+    }
+    
+    .li-table th {
+        font-size: 12px;
+    }
+    
+    /* Stats Grid - Single column on mobile */
+    .li-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .li-stat-card {
+        padding: 16px;
+    }
+    
+    .li-stat-label {
+        font-size: 12px;
+    }
+    
+    .li-stat-value {
+        font-size: 24px;
+    }
+    
+    /* Navigation - Better touch targets */
+    .li-nav-item {
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+    
+    .li-nav-item .dashicons {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin-right: 12px;
+    }
+    
+    /* Modal adjustments for mobile */
+    .li-modal-content {
+        width: calc(100% - 32px);
+        max-width: none;
+        margin: 16px;
+        max-height: calc(100vh - 32px);
+    }
+    
+    .li-modal-header {
+        padding: 16px;
+    }
+    
+    .li-modal-body {
+        padding: 16px;
+    }
+    
+    .li-modal-footer {
+        padding: 16px;
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+    
+    .li-modal-footer .li-btn {
+        width: 100%;
+    }
+    
+    /* Form elements */
+    .li-form-group {
+        margin-bottom: 16px;
+    }
+    
+    .li-form-label {
+        font-size: 13px;
+    }
+    
+    .li-form-input,
+    .li-form-select,
+    .li-form-textarea {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+    
     .li-seo-insights {
         padding: 15px;
     }

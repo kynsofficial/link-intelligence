@@ -32,6 +32,10 @@ if (!defined('ABSPATH')) {
                     <span class="dashicons dashicons-backup"></span>
                     <span>Scan History</span>
                 </a>
+                <a href="#" class="li-nav-item" data-section="redirects">
+                    <span class="dashicons dashicons-migrate"></span>
+                    <span>Redirects</span>
+                </a>
                 <a href="#" class="li-nav-item" data-section="ignored">
                     <span class="dashicons dashicons-hidden"></span>
                     <span>Ignored Issues</span>
@@ -272,6 +276,58 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
+            <!-- Redirects Section -->
+            <div id="li-section-redirects" class="li-section" style="display: none;">
+                <div class="li-card">
+                    <div class="li-card-header">
+                        <h2 class="li-card-title">URL Redirects</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="li-btn li-btn-danger li-btn-sm li-delete-selected-redirects" style="display: none;">
+                                <span class="dashicons dashicons-trash"></span> Delete Selected
+                            </button>
+                            <button class="li-btn li-btn-danger li-btn-sm li-clear-all-redirects">
+                                <span class="dashicons dashicons-dismiss"></span> Clear All
+                            </button>
+                            <button class="li-btn li-btn-primary li-add-redirect-btn">
+                                <span class="dashicons dashicons-plus"></span> Add New
+                            </button>
+                        </div>
+                    </div>
+                    <div class="li-card-body">
+                        <div class="li-table-wrapper">
+                            <table class="li-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;">
+                                            <input type="checkbox" id="li-select-all-redirects" />
+                                        </th>
+                                        <th data-sort="source_url">Source URL(s)</th>
+                                        <th data-sort="destination_url">Destination URL</th>
+                                        <th data-sort="redirect_type">Type</th>
+                                        <th data-sort="status">Status</th>
+                                        <th data-sort="category">Category</th>
+                                        <th data-sort="created_at">Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="li-redirects-table">
+                                    <tr>
+                                        <td colspan="8" class="li-text-center">
+                                            <div class="li-empty-state">
+                                                <div class="li-empty-icon"><span class="dashicons dashicons-migrate"></span></div>
+                                                <div class="li-empty-title">No redirects configured</div>
+                                                <div class="li-empty-text">Add redirects to manage your site's URL structure</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="li-pagination li-hidden"></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Ignored Issues Section -->
             <div id="li-section-ignored" class="li-section" style="display: none;">
                 <div class="li-card">
@@ -387,6 +443,84 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
+    <!-- Redirect Modal -->
+    <div id="li-redirect-modal" class="li-redirect-modal">
+        <div class="li-redirect-modal-content">
+            <div class="li-redirect-modal-header">
+                <h3 class="li-redirect-modal-title">Add Redirect</h3>
+            </div>
+            <div class="li-redirect-modal-body">
+                <div class="li-form-group">
+                    <label class="li-form-label">Source URL(s)</label>
+                    <div id="li-source-urls-container">
+                        <div class="li-source-url-row" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <input type="text" class="li-source-url-input" placeholder="https://example.com/old-page" style="flex: 1;">
+                            <button type="button" class="li-btn li-btn-secondary li-btn-sm li-remove-source-url" style="display: none;">
+                                <span class="dashicons dashicons-no"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="li-btn li-btn-secondary li-btn-sm li-add-source-url" style="margin-top: 8px;">
+                        <span class="dashicons dashicons-plus"></span> Add Another Source URL
+                    </button>
+                </div>
+
+                <div class="li-form-group">
+                    <label class="li-form-label">Destination URL</label>
+                    <input type="text" id="li-redirect-destination" placeholder="https://example.com/new-page" style="width: 100%;">
+                </div>
+
+                <div class="li-form-group">
+                    <label class="li-form-label">Redirect Type</label>
+                    <div class="li-radio-group">
+                        <div class="li-radio-item">
+                            <input type="radio" name="redirect_type" value="301" id="redirect_type_301" checked>
+                            <label for="redirect_type_301">301 Permanent</label>
+                        </div>
+                        <div class="li-radio-item">
+                            <input type="radio" name="redirect_type" value="302" id="redirect_type_302">
+                            <label for="redirect_type_302">302 Temporary</label>
+                        </div>
+                        <div class="li-radio-item">
+                            <input type="radio" name="redirect_type" value="307" id="redirect_type_307">
+                            <label for="redirect_type_307">307 Temporary</label>
+                        </div>
+                        <div class="li-radio-item">
+                            <input type="radio" name="redirect_type" value="308" id="redirect_type_308">
+                            <label for="redirect_type_308">308 Permanent</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="li-form-group">
+                    <label class="li-form-label">Status</label>
+                    <div class="li-radio-group">
+                        <div class="li-radio-item">
+                            <input type="radio" name="redirect_status" value="active" id="redirect_status_active" checked>
+                            <label for="redirect_status_active">Activate</label>
+                        </div>
+                        <div class="li-radio-item">
+                            <input type="radio" name="redirect_status" value="inactive" id="redirect_status_inactive">
+                            <label for="redirect_status_inactive">Deactivate</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="li-form-group">
+                    <label class="li-form-label">Category (Optional)</label>
+                    <div id="li-category-checkboxes" class="li-category-checkboxes" style="display: none; margin-bottom: 10px;">
+                        <!-- Existing categories as checkboxes will be populated here -->
+                    </div>
+                    <input type="text" id="li-redirect-category" placeholder="Or enter a new category">
+                </div>
+            </div>
+            <div class="li-redirect-modal-footer">
+                <button type="button" class="li-btn li-btn-secondary li-redirect-modal-cancel">Cancel</button>
+                <button type="button" class="li-btn li-btn-primary li-redirect-modal-save">Save Redirect</button>
+            </div>
+        </div>
+    </div>
+
       <!-- Support This Plugin Section -->
         <div class="li-support-footer" style="margin-top: 40px; margin-bottom: 20px;">
             <div class="li-card">
@@ -402,7 +536,7 @@ if (!defined('ABSPATH')) {
                             <a href="https://buy.stripe.com/4gw4iJ3c676t1IQaEF" target="_blank" style="text-decoration: none; color: #2271b1;">Buy Me a Coffee</a>
                         </li>
                         <li style="margin-bottom: 8px;">
-                            <a href="https://wordpress.org/support/plugin/link-health/reviews/#new-post" target="_blank" style="text-decoration: none; color: #2271b1;">Please write us a 5-star review on WordPress</a>
+                            <a href="https://wordpress.org/support/plugin/link-diagnostics-and-insights/reviews/#new-post" target="_blank" style="text-decoration: none; color: #2271b1;">Please write us a 5-star review on WordPress</a>
                         </li>
                         <li style="margin-bottom: 8px;">
                             <a href="https://x.com/kynsofficial" target="_blank" style="text-decoration: none; color: #2271b1;">Follow me on Twitter for support or questions</a>

@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class LI_Intelligence_Scanner extends LI_Scanner {
+class LHCFWP_Intelligence_Scanner extends LHCFWP_Scanner {
     
     public function __construct() {
         parent::__construct('intelligence');
@@ -12,7 +12,7 @@ class LI_Intelligence_Scanner extends LI_Scanner {
     public function start_scan($config) {
         // Clear any previous intelligence data for this scan type
         global $wpdb;
-        $table = esc_sql($wpdb->prefix . 'li_intelligence');
+        $table = esc_sql($wpdb->prefix . 'lhcfwp_intelligence');
         
         // Delete old intelligence data from previous scans
         $wpdb->query($wpdb->prepare(
@@ -29,7 +29,7 @@ class LI_Intelligence_Scanner extends LI_Scanner {
     
     protected function process_post($post, $config) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_intelligence';
+        $table = $wpdb->prefix . 'lhcfwp_intelligence';
         
         $log = array();
         
@@ -106,7 +106,7 @@ class LI_Intelligence_Scanner extends LI_Scanner {
     
     private function update_anchor_text($anchor, $post_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_intelligence';
+        $table = $wpdb->prefix . 'lhcfwp_intelligence';
         
         // Check if exists
         $existing = $wpdb->get_row($wpdb->prepare(
@@ -156,7 +156,7 @@ class LI_Intelligence_Scanner extends LI_Scanner {
     
     private function update_internal_link($url, $anchor, $post_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_intelligence';
+        $table = $wpdb->prefix . 'lhcfwp_intelligence';
         
         // Check if exists
         $existing = $wpdb->get_row($wpdb->prepare(
@@ -217,7 +217,7 @@ class LI_Intelligence_Scanner extends LI_Scanner {
     
     private function update_external_domain($domain, $anchor, $post_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_intelligence';
+        $table = $wpdb->prefix . 'lhcfwp_intelligence';
         
         // Check if exists
         $existing = $wpdb->get_row($wpdb->prepare(
@@ -275,7 +275,7 @@ class LI_Intelligence_Scanner extends LI_Scanner {
     
     private function increment_anchor_for_url($key, $anchor, $metric_type) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_intelligence';
+        $table = $wpdb->prefix . 'lhcfwp_intelligence';
         
         $existing = $wpdb->get_row($wpdb->prepare(
             "SELECT additional_data FROM $table 
@@ -317,7 +317,7 @@ class LI_Intelligence_Scanner extends LI_Scanner {
     
     private function identify_zero_inbound_pages($state) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_intelligence';
+        $table = $wpdb->prefix . 'lhcfwp_intelligence';
         
         // Get all internal link post IDs from intelligence data
         $linked_posts = $wpdb->get_col($wpdb->prepare(

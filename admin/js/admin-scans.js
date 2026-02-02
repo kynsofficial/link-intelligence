@@ -80,11 +80,11 @@
             this.disableScanButtons();
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_scan_start',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_scan_start',
+                    nonce: lhcfwpAjax.nonce,
                     scan_type: scanType,
                     config: config
                 },
@@ -112,11 +112,11 @@
             this.disableScanButtons();
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_bulk_fix_start',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_bulk_fix_start',
+                    nonce: lhcfwpAjax.nonce,
                     scan_type: scanType,
                     issue_ids: issueIds
                 },
@@ -156,11 +156,11 @@
             if (!this.scanning) return;
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_scan_continue',
-                    nonce: liAjax.nonce
+                    action: 'lhcfwp_scan_continue',
+                    nonce: lhcfwpAjax.nonce
                 },
                 success: (response) => {
                     if (response.success) {
@@ -203,11 +203,11 @@
             if (!this.scanning) return;
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_bulk_fix_continue',
-                    nonce: liAjax.nonce
+                    action: 'lhcfwp_bulk_fix_continue',
+                    nonce: lhcfwpAjax.nonce
                 },
                 success: (response) => {
                     if (response.success) {
@@ -289,14 +289,14 @@
                 return;
             }
             
-            const action = this.currentOperation === 'scan' ? 'li_scan_cancel' : 'li_bulk_fix_cancel';
+            const action = this.currentOperation === 'scan' ? 'lhcfwp_scan_cancel' : 'lhcfwp_bulk_fix_cancel';
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
                     action: action,
-                    nonce: liAjax.nonce
+                    nonce: lhcfwpAjax.nonce
                 },
                 success: () => {
                     this.scanning = false;

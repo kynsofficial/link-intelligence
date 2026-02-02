@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class LI_Database {
+class LHCFWP_Database {
     
     public static function create_tables() {
         global $wpdb;
@@ -12,7 +12,7 @@ class LI_Database {
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         
         // SCAN HISTORY TABLE - Master table for all scans
-        $table_scans = $wpdb->prefix . 'li_scans';
+        $table_scans = $wpdb->prefix . 'lhcfwp_scans';
         $sql_scans = "CREATE TABLE $table_scans (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             scan_type varchar(50) NOT NULL,
@@ -31,7 +31,7 @@ class LI_Database {
         dbDelta($sql_scans);
         
         // Issues table with scan_id
-        $table_issues = $wpdb->prefix . 'li_issues';
+        $table_issues = $wpdb->prefix . 'lhcfwp_issues';
         $sql_issues = "CREATE TABLE $table_issues (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             scan_id bigint(20) UNSIGNED NOT NULL,
@@ -58,7 +58,7 @@ class LI_Database {
         dbDelta($sql_issues);
         
         // Ignored issues table with scan_id
-        $table_ignored = $wpdb->prefix . 'li_ignored';
+        $table_ignored = $wpdb->prefix . 'lhcfwp_ignored';
         $sql_ignored = "CREATE TABLE $table_ignored (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             issue_id bigint(20) UNSIGNED NOT NULL,
@@ -76,7 +76,7 @@ class LI_Database {
         dbDelta($sql_ignored);
         
         // Fix log table
-        $table_fixes = $wpdb->prefix . 'li_fixes';
+        $table_fixes = $wpdb->prefix . 'lhcfwp_fixes';
         $sql_fixes = "CREATE TABLE $table_fixes (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             post_id bigint(20) UNSIGNED NOT NULL,
@@ -91,7 +91,7 @@ class LI_Database {
         dbDelta($sql_fixes);
         
         // Intelligence data table with scan_id
-        $table_intelligence = $wpdb->prefix . 'li_intelligence';
+        $table_intelligence = $wpdb->prefix . 'lhcfwp_intelligence';
         $sql_intelligence = "CREATE TABLE $table_intelligence (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             scan_id bigint(20) UNSIGNED NOT NULL,
@@ -109,7 +109,7 @@ class LI_Database {
         dbDelta($sql_intelligence);
         
         // Settings table - FIXED VERSION
-        $table_settings = $wpdb->prefix . 'li_settings';
+        $table_settings = $wpdb->prefix . 'lhcfwp_settings';
         $sql_settings = "CREATE TABLE $table_settings (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             setting_key varchar(100) NOT NULL,
@@ -121,7 +121,7 @@ class LI_Database {
         dbDelta($sql_settings);
         
         // Scan state table - for active scan tracking
-        $table_scan_state = $wpdb->prefix . 'li_scan_state';
+        $table_scan_state = $wpdb->prefix . 'lhcfwp_scan_state';
         $sql_scan_state = "CREATE TABLE $table_scan_state (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             scan_id bigint(20) UNSIGNED NOT NULL,
@@ -140,13 +140,34 @@ class LI_Database {
             KEY status (status)
         ) $charset_collate;";
         dbDelta($sql_scan_state);
+        
+        // Redirects table
+        $table_redirects = $wpdb->prefix . 'lhcfwp_redirects';
+        $sql_redirects = "CREATE TABLE $table_redirects (
+            id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            source_urls longtext NOT NULL,
+            destination_url text NOT NULL,
+            redirect_type varchar(10) NOT NULL DEFAULT '301',
+            status varchar(20) NOT NULL DEFAULT 'active',
+            match_type varchar(20) NOT NULL DEFAULT 'exact',
+            scheduled_activation datetime NULL,
+            scheduled_deactivation datetime NULL,
+            category varchar(100),
+            created_by bigint(20) UNSIGNED NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY status (status),
+            KEY match_type (match_type)
+        ) $charset_collate;";
+        dbDelta($sql_redirects);
     }
     
     // SCAN HISTORY METHODS
     
     public static function create_scan($data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scans';
+        $table = $wpdb->prefix . 'lhcfwp_scans';
         
         // Generate config hash for comparison
         $config_hash = md5(json_encode($data['scan_config']));
@@ -182,7 +203,7 @@ class LI_Database {
     
     public static function update_scan($scan_id, $data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scans';
+        $table = $wpdb->prefix . 'lhcfwp_scans';
         
         $update_data = array();
         
@@ -206,19 +227,19 @@ class LI_Database {
         global $wpdb;
         
         // Delete all issues for this scan
-        $wpdb->delete($wpdb->prefix . 'li_issues', array('scan_id' => $scan_id));
+        $wpdb->delete($wpdb->prefix . 'lhcfwp_issues', array('scan_id' => $scan_id));
         
         // Delete all ignored issues for this scan
-        $wpdb->delete($wpdb->prefix . 'li_ignored', array('scan_id' => $scan_id));
+        $wpdb->delete($wpdb->prefix . 'lhcfwp_ignored', array('scan_id' => $scan_id));
         
         // Delete all intelligence for this scan
-        $wpdb->delete($wpdb->prefix . 'li_intelligence', array('scan_id' => $scan_id));
+        $wpdb->delete($wpdb->prefix . 'lhcfwp_intelligence', array('scan_id' => $scan_id));
         
         // Delete scan state if exists
-        $wpdb->delete($wpdb->prefix . 'li_scan_state', array('scan_id' => $scan_id));
+        $wpdb->delete($wpdb->prefix . 'lhcfwp_scan_state', array('scan_id' => $scan_id));
         
         // Delete the scan itself
-        return $wpdb->delete($wpdb->prefix . 'li_scans', array('id' => $scan_id));
+        return $wpdb->delete($wpdb->prefix . 'lhcfwp_scans', array('id' => $scan_id));
     }
     
     /**
@@ -247,7 +268,7 @@ class LI_Database {
         }
         
         // Get all previous scans of the same type
-        $table_scans = $wpdb->prefix . 'li_scans';
+        $table_scans = $wpdb->prefix . 'lhcfwp_scans';
         $previous_scans = $wpdb->get_results($wpdb->prepare(
             "SELECT id, scan_config FROM $table_scans WHERE scan_type = %s",
             $scan_type
@@ -289,9 +310,9 @@ class LI_Database {
             return;
         }
         
-        $table_issues = $wpdb->prefix . 'li_issues';
-        $table_ignored = $wpdb->prefix . 'li_ignored';
-        $table_intelligence = $wpdb->prefix . 'li_intelligence';
+        $table_issues = $wpdb->prefix . 'lhcfwp_issues';
+        $table_ignored = $wpdb->prefix . 'lhcfwp_ignored';
+        $table_intelligence = $wpdb->prefix . 'lhcfwp_intelligence';
         
         // Build WHERE clause for post types
         $placeholders = implode(',', array_fill(0, count($post_types), '%s'));
@@ -341,25 +362,25 @@ class LI_Database {
         global $wpdb;
         
         // Truncate all related tables
-        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'li_issues');
-        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'li_ignored');
-        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'li_intelligence');
-        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'li_scan_state');
-        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'li_scans');
+        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'lhcfwp_issues');
+        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'lhcfwp_ignored');
+        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'lhcfwp_intelligence');
+        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'lhcfwp_scan_state');
+        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . 'lhcfwp_scans');
         
         return true;
     }
     
     public static function get_scan($scan_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scans';
+        $table = $wpdb->prefix . 'lhcfwp_scans';
         
         return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $scan_id), ARRAY_A);
     }
     
     public static function get_all_scans($page = 1, $per_page = 20) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scans';
+        $table = $wpdb->prefix . 'lhcfwp_scans';
         
         $offset = ($page - 1) * $per_page;
         
@@ -394,7 +415,7 @@ class LI_Database {
     
     public static function get_scans_by_type($scan_type) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scans';
+        $table = $wpdb->prefix . 'lhcfwp_scans';
         
         return $wpdb->get_results($wpdb->prepare(
             "SELECT id, scan_config, started_at, completed_at, issues_found, status 
@@ -409,7 +430,7 @@ class LI_Database {
     
     public static function create_scan_state($data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scan_state';
+        $table = $wpdb->prefix . 'lhcfwp_scan_state';
         
         // Delete any existing scan state first
         $wpdb->query("DELETE FROM $table");
@@ -432,7 +453,7 @@ class LI_Database {
     
     public static function update_scan_state($data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scan_state';
+        $table = $wpdb->prefix . 'lhcfwp_scan_state';
         
         $update_data = array(
             'current' => $data['current'],
@@ -450,7 +471,7 @@ class LI_Database {
     
     public static function get_scan_state() {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scan_state';
+        $table = $wpdb->prefix . 'lhcfwp_scan_state';
         
         $result = $wpdb->get_row("SELECT * FROM $table LIMIT 1", ARRAY_A);
         
@@ -468,7 +489,7 @@ class LI_Database {
     
     public static function delete_scan_state() {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_scan_state';
+        $table = $wpdb->prefix . 'lhcfwp_scan_state';
         
         return $wpdb->query("DELETE FROM $table");
     }
@@ -477,7 +498,7 @@ class LI_Database {
     
     public static function get_setting($key, $default = null) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_settings';
+        $table = $wpdb->prefix . 'lhcfwp_settings';
         
         $value = $wpdb->get_var($wpdb->prepare(
             "SELECT setting_value FROM $table WHERE setting_key = %s",
@@ -493,7 +514,7 @@ class LI_Database {
     
     public static function update_setting($key, $value) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_settings';
+        $table = $wpdb->prefix . 'lhcfwp_settings';
         
         $serialized_value = maybe_serialize($value);
         
@@ -518,7 +539,7 @@ class LI_Database {
     
     public static function get_all_settings() {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_settings';
+        $table = $wpdb->prefix . 'lhcfwp_settings';
         
         $results = $wpdb->get_results("SELECT setting_key, setting_value FROM $table", ARRAY_A);
         
@@ -534,7 +555,7 @@ class LI_Database {
     
     public static function add_issue($data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_issues';
+        $table = $wpdb->prefix . 'lhcfwp_issues';
         
         // Check if same issue already exists for this scan
         $existing = $wpdb->get_var($wpdb->prepare(
@@ -559,9 +580,9 @@ class LI_Database {
     
     public static function get_issues($scan_type, $page = 1, $per_page = 20, $filters = array()) {
         global $wpdb;
-        $table_issues = $wpdb->prefix . 'li_issues';
-        $table_ignored = $wpdb->prefix . 'li_ignored';
-        $table_scans = $wpdb->prefix . 'li_scans';
+        $table_issues = $wpdb->prefix . 'lhcfwp_issues';
+        $table_ignored = $wpdb->prefix . 'lhcfwp_ignored';
+        $table_scans = $wpdb->prefix . 'lhcfwp_scans';
         
         $offset = ($page - 1) * $per_page;
         
@@ -620,8 +641,8 @@ class LI_Database {
     
     public static function get_fixable_issues($scan_type, $filters = array()) {
         global $wpdb;
-        $table_issues = $wpdb->prefix . 'li_issues';
-        $table_ignored = $wpdb->prefix . 'li_ignored';
+        $table_issues = $wpdb->prefix . 'lhcfwp_issues';
+        $table_ignored = $wpdb->prefix . 'lhcfwp_ignored';
         
         $where = array("i.scan_type = %s", "i.is_fixable = 1");
         $where_values = array($scan_type);
@@ -649,14 +670,14 @@ class LI_Database {
     
     public static function delete_issue($issue_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_issues';
+        $table = $wpdb->prefix . 'lhcfwp_issues';
         
         return $wpdb->delete($table, array('id' => $issue_id));
     }
     
     public static function mark_issue_as_fixed($issue_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_issues';
+        $table = $wpdb->prefix . 'lhcfwp_issues';
         
         return $wpdb->update(
             $table,
@@ -669,8 +690,8 @@ class LI_Database {
     
     public static function ignore_issue($issue_id, $reason = '') {
         global $wpdb;
-        $table_issues = $wpdb->prefix . 'li_issues';
-        $table_ignored = $wpdb->prefix . 'li_ignored';
+        $table_issues = $wpdb->prefix . 'lhcfwp_issues';
+        $table_ignored = $wpdb->prefix . 'lhcfwp_ignored';
         
         $issue = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_issues WHERE id = %d", $issue_id), ARRAY_A);
         
@@ -690,15 +711,15 @@ class LI_Database {
     
     public static function unignore_issue($issue_id) {
         global $wpdb;
-        $table_ignored = $wpdb->prefix . 'li_ignored';
+        $table_ignored = $wpdb->prefix . 'lhcfwp_ignored';
         
         return $wpdb->delete($table_ignored, array('issue_id' => $issue_id));
     }
     
     public static function get_ignored_issues($page = 1, $per_page = 20) {
         global $wpdb;
-        $table_issues = $wpdb->prefix . 'li_issues';
-        $table_ignored = $wpdb->prefix . 'li_ignored';
+        $table_issues = $wpdb->prefix . 'lhcfwp_issues';
+        $table_ignored = $wpdb->prefix . 'lhcfwp_ignored';
         
         $offset = ($page - 1) * $per_page;
         
@@ -723,7 +744,7 @@ class LI_Database {
     
     public static function log_fix($post_id, $old_url, $new_url, $anchor_text) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_fixes';
+        $table = $wpdb->prefix . 'lhcfwp_fixes';
         
         return $wpdb->insert($table, array(
             'post_id' => $post_id,
@@ -736,15 +757,15 @@ class LI_Database {
     
     public static function add_intelligence($data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_intelligence';
+        $table = $wpdb->prefix . 'lhcfwp_intelligence';
         
         return $wpdb->insert($table, $data);
     }
     
     public static function get_intelligence($metric_type, $page = 1, $per_page = 20) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_intelligence';
-        $table_scans = $wpdb->prefix . 'li_scans';
+        $table = $wpdb->prefix . 'lhcfwp_intelligence';
+        $table_scans = $wpdb->prefix . 'lhcfwp_scans';
         
         $offset = ($page - 1) * $per_page;
         
@@ -793,13 +814,14 @@ class LI_Database {
         global $wpdb;
         
         $tables = array(
-            $wpdb->prefix . 'li_scans',
-            $wpdb->prefix . 'li_issues',
-            $wpdb->prefix . 'li_ignored',
-            $wpdb->prefix . 'li_fixes',
-            $wpdb->prefix . 'li_intelligence',
-            $wpdb->prefix . 'li_settings',
-            $wpdb->prefix . 'li_scan_state'
+            $wpdb->prefix . 'lhcfwp_scans',
+            $wpdb->prefix . 'lhcfwp_issues',
+            $wpdb->prefix . 'lhcfwp_ignored',
+            $wpdb->prefix . 'lhcfwp_fixes',
+            $wpdb->prefix . 'lhcfwp_intelligence',
+            $wpdb->prefix . 'lhcfwp_settings',
+            $wpdb->prefix . 'lhcfwp_scan_state',
+            $wpdb->prefix . 'lhcfwp_redirects'
         );
         
         foreach ($tables as $table) {
@@ -807,7 +829,319 @@ class LI_Database {
         }
         
         // Clean up any old wp_options data
-        delete_option('li_settings');
-        delete_option('li_scan_state');
+        delete_option('lhcfwp_settings');
+        delete_option('lhcfwp_scan_state');
+    }
+    
+    // REDIRECT METHODS
+    
+    public static function add_redirect($data) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        // Ensure table exists with correct schema
+        self::ensure_redirects_table_schema();
+        
+        // Ensure source_urls is an array
+        $source_urls = isset($data['source_urls']) && is_array($data['source_urls']) 
+            ? $data['source_urls'] 
+            : (isset($data['source_url']) ? array($data['source_url']) : array());
+        
+        if (empty($source_urls)) {
+            self::$last_error = 'No source URLs provided';
+            return false;
+        }
+        
+        // Check for duplicate source URLs across all redirects
+        $duplicates = self::check_duplicate_sources($source_urls);
+        if (!empty($duplicates)) {
+            self::$last_error = 'Source URL(s) already exist: ' . implode(', ', $duplicates);
+            return false;
+        }
+        
+        $insert_data = array(
+            'source_urls' => json_encode($source_urls),
+            'destination_url' => $data['destination_url'],
+            'redirect_type' => isset($data['redirect_type']) ? $data['redirect_type'] : '301',
+            'status' => isset($data['status']) ? $data['status'] : 'active',
+            'match_type' => isset($data['match_type']) ? $data['match_type'] : 'exact',
+            'category' => isset($data['category']) && !empty($data['category']) ? $data['category'] : null,
+            'scheduled_activation' => isset($data['scheduled_activation']) && !empty($data['scheduled_activation']) ? $data['scheduled_activation'] : null,
+            'scheduled_deactivation' => isset($data['scheduled_deactivation']) && !empty($data['scheduled_deactivation']) ? $data['scheduled_deactivation'] : null,
+            'created_by' => get_current_user_id()
+        );
+        
+        $result = $wpdb->insert($table, $insert_data);
+        
+        if ($result === false) {
+            self::$last_error = $wpdb->last_error;
+            return false;
+        }
+        
+        return $wpdb->insert_id;
+    }
+    
+    public static function check_duplicate_sources($source_urls, $exclude_id = null) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        $existing_redirects = $wpdb->get_results("SELECT id, source_urls FROM $table", ARRAY_A);
+        $duplicates = array();
+        
+        foreach ($existing_redirects as $redirect) {
+            if ($exclude_id && $redirect['id'] == $exclude_id) {
+                continue;
+            }
+            
+            $existing_sources = json_decode($redirect['source_urls'], true);
+            if (!is_array($existing_sources)) {
+                continue;
+            }
+            
+            foreach ($source_urls as $new_source) {
+                foreach ($existing_sources as $existing_source) {
+                    if (rtrim($new_source, '/') === rtrim($existing_source, '/')) {
+                        $duplicates[] = $new_source;
+                    }
+                }
+            }
+        }
+        
+        return array_unique($duplicates);
+    }
+    
+    private static function ensure_redirects_table_schema() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        // Check if table exists
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table'");
+        
+        if (!$table_exists) {
+            // Table doesn't exist, create it
+            self::create_redirects_table();
+            return;
+        }
+        
+        // Table exists, check if it has the source_urls column
+        $columns = $wpdb->get_results("SHOW COLUMNS FROM $table", ARRAY_A);
+        $has_source_urls = false;
+        
+        foreach ($columns as $column) {
+            if ($column['Field'] === 'source_urls') {
+                $has_source_urls = true;
+                break;
+            }
+        }
+        
+        // If source_urls column doesn't exist, drop and recreate the table
+        if (!$has_source_urls) {
+            $wpdb->query("DROP TABLE IF EXISTS $table");
+            self::create_redirects_table();
+        }
+    }
+    
+    private static function create_redirects_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        
+        $table_redirects = $wpdb->prefix . 'lhcfwp_redirects';
+        $sql_redirects = "CREATE TABLE $table_redirects (
+            id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            source_urls longtext NOT NULL,
+            destination_url text NOT NULL,
+            redirect_type varchar(10) NOT NULL DEFAULT '301',
+            status varchar(20) NOT NULL DEFAULT 'active',
+            match_type varchar(20) NOT NULL DEFAULT 'exact',
+            scheduled_activation datetime NULL,
+            scheduled_deactivation datetime NULL,
+            category varchar(100),
+            created_by bigint(20) UNSIGNED NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY status (status),
+            KEY match_type (match_type)
+        ) $charset_collate;";
+        dbDelta($sql_redirects);
+    }
+    
+    private static $last_error = '';
+    
+    public static function get_last_error() {
+        return self::$last_error;
+    }
+    
+    public static function update_redirect($id, $data) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        // Ensure table exists with correct schema
+        self::ensure_redirects_table_schema();
+        
+        $update_data = array();
+        
+        if (isset($data['source_urls'])) {
+            // Check for duplicates excluding this redirect
+            if (is_array($data['source_urls'])) {
+                $duplicates = self::check_duplicate_sources($data['source_urls'], $id);
+                if (!empty($duplicates)) {
+                    self::$last_error = 'Source URL(s) already exist: ' . implode(', ', $duplicates);
+                    return false;
+                }
+                $update_data['source_urls'] = json_encode($data['source_urls']);
+            }
+        }
+        if (isset($data['destination_url'])) {
+            $update_data['destination_url'] = $data['destination_url'];
+        }
+        if (isset($data['redirect_type'])) {
+            $update_data['redirect_type'] = $data['redirect_type'];
+        }
+        if (isset($data['status'])) {
+            $update_data['status'] = $data['status'];
+        }
+        if (isset($data['match_type'])) {
+            $update_data['match_type'] = $data['match_type'];
+        }
+        if (isset($data['category'])) {
+            $update_data['category'] = $data['category'];
+        }
+        if (isset($data['scheduled_activation'])) {
+            $update_data['scheduled_activation'] = $data['scheduled_activation'];
+        }
+        if (isset($data['scheduled_deactivation'])) {
+            $update_data['scheduled_deactivation'] = $data['scheduled_deactivation'];
+        }
+        
+        return $wpdb->update($table, $update_data, array('id' => $id));
+    }
+    
+    public static function get_redirects($page = 1, $per_page = 20, $filters = array()) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        // Ensure table exists with correct schema
+        self::ensure_redirects_table_schema();
+        
+        $offset = ($page - 1) * $per_page;
+        
+        $where = array("1=1");
+        $where_values = array();
+        
+        if (!empty($filters['status'])) {
+            $where[] = "status = %s";
+            $where_values[] = $filters['status'];
+        }
+        
+        if (!empty($filters['category'])) {
+            $where[] = "category = %s";
+            $where_values[] = $filters['category'];
+        }
+        
+        if (!empty($filters['search'])) {
+            $where[] = "(source_urls LIKE %s OR destination_url LIKE %s)";
+            $search_term = '%' . $wpdb->esc_like($filters['search']) . '%';
+            $where_values[] = $search_term;
+            $where_values[] = $search_term;
+        }
+        
+        $where_sql = implode(' AND ', $where);
+        
+        $query = "SELECT * FROM $table WHERE $where_sql ORDER BY created_at DESC LIMIT %d OFFSET %d";
+        $where_values[] = $per_page;
+        $where_values[] = $offset;
+        
+        $results = $wpdb->get_results($wpdb->prepare($query, $where_values), ARRAY_A);
+        
+        $count_query = "SELECT COUNT(*) FROM $table WHERE $where_sql";
+        $total = $wpdb->get_var(
+            empty($where_values) || (count($where_values) == 2) ? 
+            $count_query : 
+            $wpdb->prepare($count_query, array_slice($where_values, 0, count($where_values) - 2))
+        );
+        
+        return array(
+            'redirects' => $results,
+            'total' => (int) $total,
+            'page' => $page,
+            'per_page' => $per_page,
+            'total_pages' => ceil($total / $per_page)
+        );
+    }
+    
+    public static function get_redirect($id) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id), ARRAY_A);
+    }
+    
+    public static function delete_redirect($id) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        return $wpdb->delete($table, array('id' => $id));
+    }
+    
+    public static function get_active_redirects() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        // Ensure table exists with correct schema
+        self::ensure_redirects_table_schema();
+        
+        $current_time = current_time('mysql');
+        
+        $query = "SELECT * FROM $table 
+                  WHERE status = 'active'
+                  AND (scheduled_activation IS NULL OR scheduled_activation <= %s)
+                  AND (scheduled_deactivation IS NULL OR scheduled_deactivation > %s)
+                  ORDER BY id ASC";
+        
+        $results = $wpdb->get_results($wpdb->prepare($query, $current_time, $current_time), ARRAY_A);
+        
+        // Expand source_urls for redirect matching
+        $expanded = array();
+        foreach ($results as $redirect) {
+            $source_urls = json_decode($redirect['source_urls'], true);
+            if (!is_array($source_urls)) {
+                $source_urls = array($redirect['source_urls']);
+            }
+            
+            foreach ($source_urls as $source_url) {
+                $expanded[] = array(
+                    'id' => $redirect['id'],
+                    'source_url' => $source_url,
+                    'destination_url' => $redirect['destination_url'],
+                    'redirect_type' => $redirect['redirect_type'],
+                    'match_type' => $redirect['match_type']
+                );
+            }
+        }
+        
+        return $expanded;
+    }
+    
+    public static function delete_redirects($ids) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        if (empty($ids) || !is_array($ids)) {
+            return false;
+        }
+        
+        $ids = array_map('intval', $ids);
+        $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+        
+        return $wpdb->query($wpdb->prepare("DELETE FROM $table WHERE id IN ($placeholders)", $ids));
+    }
+    
+    public static function clear_all_redirects() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lhcfwp_redirects';
+        
+        return $wpdb->query("TRUNCATE TABLE $table");
     }
 }

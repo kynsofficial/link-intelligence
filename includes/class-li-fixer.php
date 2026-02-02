@@ -3,11 +3,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class LI_Fixer {
+class LHCFWP_Fixer {
     
     public static function fix_link($issue_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_issues';
+        $table = $wpdb->prefix . 'lhcfwp_issues';
         
         $issue = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM `{$table}` WHERE id = %d",
@@ -85,10 +85,10 @@ class LI_Fixer {
         }
         
         // Log the fix
-        LI_Database::log_fix($post->ID, $old_url, $new_url, $issue['anchor_text']);
+        LHCFWP_Database::log_fix($post->ID, $old_url, $new_url, $issue['anchor_text']);
         
         // Mark the issue as fixed instead of deleting it
-        LI_Database::mark_issue_as_fixed($issue_id);
+        LHCFWP_Database::mark_issue_as_fixed($issue_id);
         
         return array(
             'success' => true,
@@ -101,7 +101,7 @@ class LI_Fixer {
     
     public static function start_bulk_fix($scan_type, $issue_ids = array()) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_issues';
+        $table = $wpdb->prefix . 'lhcfwp_issues';
         
         // Count fixable issues (lightweight query)
         if (!empty($issue_ids)) {
@@ -140,7 +140,7 @@ class LI_Fixer {
             'status' => 'running'
         );
         
-        set_transient('li_bulk_fix_state', $state, 3600);
+        set_transient('lhcfwp_bulk_fix_state', $state, 3600);
         
         return array(
             'success' => true,
@@ -150,7 +150,7 @@ class LI_Fixer {
     }
     
     public static function continue_bulk_fix() {
-        $state = get_transient('li_bulk_fix_state');
+        $state = get_transient('lhcfwp_bulk_fix_state');
         
         if (!$state || $state['status'] !== 'running') {
             return array(
@@ -194,7 +194,7 @@ class LI_Fixer {
         $progress = round(($state['current'] / $state['total']) * 100);
         
         // Update state
-        set_transient('li_bulk_fix_state', $state, 3600);
+        set_transient('lhcfwp_bulk_fix_state', $state, 3600);
         
         return array(
             'success' => true,
@@ -213,7 +213,7 @@ class LI_Fixer {
      */
     private static function get_next_fixable_issue($scan_type, $issue_ids, $processed_ids) {
         global $wpdb;
-        $table = $wpdb->prefix . 'li_issues';
+        $table = $wpdb->prefix . 'lhcfwp_issues';
         
         if (!empty($issue_ids)) {
             // Get from specific issue IDs, excluding processed ones
@@ -259,7 +259,7 @@ class LI_Fixer {
     
     private static function complete_bulk_fix($state) {
         $state['status'] = 'completed';
-        set_transient('li_bulk_fix_state', $state, 3600);
+        set_transient('lhcfwp_bulk_fix_state', $state, 3600);
         
         return array(
             'success' => true,
@@ -273,7 +273,7 @@ class LI_Fixer {
     }
     
     public static function cancel_bulk_fix() {
-        delete_transient('li_bulk_fix_state');
+        delete_transient('lhcfwp_bulk_fix_state');
         
         return array(
             'success' => true,
@@ -282,7 +282,7 @@ class LI_Fixer {
     }
     
     public static function get_bulk_fix_state() {
-        return get_transient('li_bulk_fix_state');
+        return get_transient('lhcfwp_bulk_fix_state');
     }
     
     private static function replace_url_in_content($content, $old_url, $new_url, $anchor_text) {

@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
  * Processes ONE URL per AJAX call for stability.
  * Checks external links for 404, 410, 5xx errors.
  */
-class LI_External_Scanner extends LI_Scanner {
+class LHCFWP_External_Scanner extends LHCFWP_Scanner {
     
     public function __construct() {
         parent::__construct('external_errors');
@@ -29,7 +29,7 @@ class LI_External_Scanner extends LI_Scanner {
         $total_posts = count($posts);
         
         // Create scan history record
-        $scan_id = LI_Database::create_scan(array(
+        $scan_id = LHCFWP_Database::create_scan(array(
             'scan_type' => $this->scan_type,
             'scan_config' => $config,
             'total_posts' => $total_posts,
@@ -58,7 +58,7 @@ class LI_External_Scanner extends LI_Scanner {
             'status' => 'running'
         );
         
-        update_option('li_scan_state', $state, false);
+        update_option('lhcfwp_scan_state', $state, false);
         
         return array(
             'success' => true,
@@ -68,7 +68,7 @@ class LI_External_Scanner extends LI_Scanner {
     }
     
     public function continue_scan() {
-        $state = get_option('li_scan_state');
+        $state = get_option('lhcfwp_scan_state');
         
         if (!$state || $state['status'] !== 'running') {
             return array(
@@ -89,7 +89,7 @@ class LI_External_Scanner extends LI_Scanner {
             
             // If still no URLs (post had no external links), continue to next
             if (empty($state['current_post_urls'])) {
-                update_option('li_scan_state', $state, false);
+                update_option('lhcfwp_scan_state', $state, false);
                 return $this->continue_scan();
             }
         }
@@ -109,11 +109,11 @@ class LI_External_Scanner extends LI_Scanner {
             $progress = round($post_progress + $url_progress);
         }
         
-        update_option('li_scan_state', $state, false);
+        update_option('lhcfwp_scan_state', $state, false);
         
         // Update scan history periodically
         if ($state['total_urls_checked'] % 10 === 0) {
-            LI_Database::update_scan($this->scan_id, array(
+            LHCFWP_Database::update_scan($this->scan_id, array(
                 'issues_found' => $state['issues_found']
             ));
         }
@@ -269,7 +269,7 @@ class LI_External_Scanner extends LI_Scanner {
         
         if ($issue_found) {
             // Add to database for THIS post
-            LI_Database::add_issue(array(
+            LHCFWP_Database::add_issue(array(
                 'scan_id' => $this->scan_id,
                 'scan_type' => $this->scan_type,
                 'post_id' => $state['current_post_id'],
@@ -309,16 +309,16 @@ class LI_External_Scanner extends LI_Scanner {
         global $wpdb;
         $state['status'] = 'completed';
         $state['completed_at'] = current_time('mysql');
-        update_option('li_scan_state', $state, false);
+        update_option('lhcfwp_scan_state', $state, false);
         
         // Count ALL pending issues from database (not just unique ones)
-        $issues_table = $wpdb->prefix . 'li_issues';
+        $issues_table = $wpdb->prefix . 'lhcfwp_issues';
         $actual_issues_count = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $issues_table WHERE scan_id = %d AND status = 'pending'",
             $this->scan_id
         ));
         
-        LI_Database::update_scan($this->scan_id, array(
+        LHCFWP_Database::update_scan($this->scan_id, array(
             'status' => 'completed',
             'completed_at' => current_time('mysql'),
             'issues_found' => $actual_issues_count

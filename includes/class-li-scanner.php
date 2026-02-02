@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-abstract class LI_Scanner {
+abstract class LHCFWP_Scanner {
     
     protected $scan_type;
     protected $state;
@@ -27,7 +27,7 @@ abstract class LI_Scanner {
         $total_posts = count($posts);
         
         // Create scan history record
-        $scan_id = LI_Database::create_scan(array(
+        $scan_id = LHCFWP_Database::create_scan(array(
             'scan_type' => $this->scan_type,
             'scan_config' => $config,
             'total_posts' => $total_posts,
@@ -50,7 +50,7 @@ abstract class LI_Scanner {
             'status' => 'running'
         );
         
-        update_option('li_scan_state', $state, false);
+        update_option('lhcfwp_scan_state', $state, false);
         
         return array(
             'success' => true,
@@ -60,7 +60,7 @@ abstract class LI_Scanner {
     }
     
     public function continue_scan() {
-        $state = get_option('li_scan_state');
+        $state = get_option('lhcfwp_scan_state');
         
         if (!$state || $state['status'] !== 'running') {
             return array(
@@ -82,7 +82,7 @@ abstract class LI_Scanner {
         if (!$post) {
             // Skip invalid post
             $state['current']++;
-            update_option('li_scan_state', $state, false);
+            update_option('lhcfwp_scan_state', $state, false);
             return $this->continue_scan();
         }
         
@@ -99,11 +99,11 @@ abstract class LI_Scanner {
         
         $progress = round(($state['current'] / $state['total']) * 100);
         
-        update_option('li_scan_state', $state, false);
+        update_option('lhcfwp_scan_state', $state, false);
         
         // Update scan history periodically (every 10 posts to reduce DB writes)
         if ($state['current'] % 10 === 0 || $state['current'] >= $state['total']) {
-            LI_Database::update_scan($this->scan_id, array(
+            LHCFWP_Database::update_scan($this->scan_id, array(
                 'issues_found' => $state['issues_found']
             ));
         }
@@ -122,10 +122,10 @@ abstract class LI_Scanner {
     protected function complete_scan($state) {
         $state['status'] = 'completed';
         $state['completed_at'] = current_time('mysql');
-        update_option('li_scan_state', $state, false);
+        update_option('lhcfwp_scan_state', $state, false);
         
         // Update scan history
-        LI_Database::update_scan($this->scan_id, array(
+        LHCFWP_Database::update_scan($this->scan_id, array(
             'status' => 'completed',
             'completed_at' => current_time('mysql'),
             'issues_found' => $state['issues_found']
@@ -141,16 +141,16 @@ abstract class LI_Scanner {
     }
     
     public function cancel_scan() {
-        $state = get_option('li_scan_state');
+        $state = get_option('lhcfwp_scan_state');
         
         if ($state && isset($state['scan_id'])) {
-            LI_Database::update_scan($state['scan_id'], array(
+            LHCFWP_Database::update_scan($state['scan_id'], array(
                 'status' => 'cancelled',
                 'completed_at' => current_time('mysql')
             ));
         }
         
-        delete_option('li_scan_state');
+        delete_option('lhcfwp_scan_state');
         
         return array(
             'success' => true,
@@ -159,7 +159,7 @@ abstract class LI_Scanner {
     }
     
     public function get_state() {
-        return get_option('li_scan_state');
+        return get_option('lhcfwp_scan_state');
     }
     
     /**
