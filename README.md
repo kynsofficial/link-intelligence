@@ -8,11 +8,7 @@ Production-grade link analysis and intelligence engine for WordPress. Monitor in
 
 ## Overview
 
-Link Health is a comprehensive link monitoring and analysis tool built for editorial teams, SEO professionals, and site maintainers who need complete visibility into a WordPress site’s link structure.
-
-Unlike automated link fixers, this plugin focuses on detection, reporting, and editorial decision-making rather than automatic content changes.
-
-The plugin scans WordPress content to identify three categories of information:
+Monitor internal and external link health, detect broken links and redirects, and gain editorial link intelligence without automatic content changes.
 
 1. **Internal Link Health**  
    Redirects, broken links, and server errors on internal URLs.
