@@ -8,147 +8,194 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Comprehensive link health monitoring, redirect management, and SEO intelligence for WordPress sites. Find broken links, optimize internal linking, and improve site performance.
+Complete link health monitoring for WordPress. Find broken links, fix redirect chains, optimize internal linking, and improve SEO performance.
 
 == Description ==
 
-Link Diagnostics is a powerful SEO and link management tool that gives you complete visibility into your site's link structure. Whether you're managing a small blog or a large content library, Link Diagnostics helps you maintain healthy links, optimize internal linking patterns, and improve your site's overall SEO performance.
+Link Diagnostics is a comprehensive link analysis tool that scans your WordPress site for link issues and provides detailed intelligence about your internal linking structure. If you're serious about SEO and site maintenance, this plugin gives you the visibility you need to keep your links healthy.
 
-= Core Features =
+= Why Link Health Matters for SEO =
 
-**🔍 Internal Link Health Monitoring**
+Over time, your site accumulates link problems. You delete old posts, change slugs, restructure content. Automated or manual redirect plugins create chains. External sites you have linked to in the past go offline. The result:
 
-Keep your internal links in perfect shape with comprehensive scanning and detection:
+* Redirect chains that waste crawl budget and slow page speed
+* Broken internal links that hurt user experience and rankings
+* Orphaned content that search engines can't discover
+* Dead external links that signal poor maintenance
+* Inefficient internal linking that fails to pass authority to important pages
 
-* Detects HTTP redirects on internal links (301, 302, 307, 308)
-* Identifies broken internal links (404 errors)
-* Finds internal server errors (500-level responses)
-* Shows exact location of each issue by post, anchor text, and URL
-* Provides quick access to fix issues directly in post editor
+These issues directly impact your SEO health score in tools like Ahrefs, Semrush, and Screaming Frog. Link Diagnostics helps you fix them systematically.
 
-**🌐 External Link Error Detection**
+= Internal Link Health - The Big Win =
 
-Monitor all your outbound links to ensure they're working correctly:
+This is where the plugin delivers maximum value. When you change a URL or delete a post, redirect plugins create a 301 redirect. Fine for visitors, but now you have anchor texts across your site linking to URLs that redirect elsewhere. Every redirect hop wastes crawl budget and dilutes link equity, seo tools detect it and tell you to fix, but then, your site is large, how many do you want to start fixing one after the other? well, that's why this plugin exists.
 
-* Scans external links for 404 and 410 errors
-* Identifies external server errors (5xx responses)
-* Reports unreachable external domains
-* Tracks which posts contain broken external links
-* Helps maintain site credibility and user experience
+**What Link Diagnostics does:**
 
-**📊 Link Intelligence & SEO Analysis**
+Scans every post and finds anchor texts linking to redirected URLs. You see:
 
-Gain powerful insights into your internal linking strategy:
+* The post containing the link
+* The anchor text used
+* The current URL being linked to
+* Where that URL redirects to
+* The redirect type (301, 302, 307, 308)
 
-* **Most Linked Pages**: Discover your power pages and content hubs
-* **Anchor Text Analysis**: See how you're linking internally across your site
-* **External Domain Tracking**: Monitor your outbound link relationships
-* **Orphan Page Detection**: Find content with zero internal links
-* **Link Distribution Insights**: Identify opportunities to strengthen internal linking
-* **Content Authority Mapping**: Understand which pages are central to your site structure
+Click "Fix" and the plugin updates the anchor's href to point directly to the final destination. No more redirect chains. Your internal links point exactly where they should.
 
-**⚡ Smart URL Redirect Management**
+**Why this matters:**
 
-Create and manage redirects with ease:
+* Preserves crawl budget by eliminating unnecessary redirects
+* Passes full link equity directly to target pages
+* Improves page speed (fewer redirect hops)
+* Boosts SEO health scores dramatically
+* Strengthens your internal linking structure
 
-* Support for 301, 302, 307, and 308 redirect types
+This one feature alone can move your site health score from 60% to 90%+ in SEO tools.
+
+= Other Internal Link Issues Detected =
+
+Beyond redirects, the plugin finds:
+
+* **404 Errors**: Broken internal links where the target page doesn't exist
+* **410 Gone**: Links to permanently deleted content
+* **500 Errors**: Server errors on internal URLs
+* **Redirect Chains**: Multiple redirect hops before reaching destination
+
+Each issue shows the source post, anchor text, problematic URL, and HTTP status code. Fix them directly from the admin panel.
+
+= External Link Error Detection =
+
+Your outbound links matter too. Link Diagnostics scans external links and reports:
+
+* 404 and 410 errors (broken external links)
+* 5xx server errors (unreliable external sites)
+* DNS failures and timeouts (unreachable domains)
+* Redirect chains on external URLs
+
+You see which posts contain broken external links and can update or remove them to maintain content quality.
+
+= Link Intelligence - Understand Your Link Structure =
+
+This is the strategic part. Beyond finding problems, Link Diagnostics analyzes your entire link structure to reveal:
+
+**Most Linked Internal Pages**
+
+See which pages receive the most internal links. These are your content hubs and authority pages. You can:
+
+* Verify your most important pages are well-linked
+* Find pages that are over-linked or under-linked
+* Identify pillar content opportunities
+* Balance internal link distribution
+
+Each page shows total inbound links and expandable details listing every source post with the exact anchor texts used.
+
+**Common Anchor Texts**
+
+Discover which anchor texts you use most frequently. This helps you:
+
+* Spot over-optimization (too many exact-match anchors)
+* Find opportunities for natural language variation
+* Maintain consistency across your content
+* Avoid anchor text patterns that look spammy
+
+**External Domains Analysis**
+
+See which external sites you link to most often. This reveals:
+
+* Your most frequently cited sources
+* Over-reliance on specific domains
+* Opportunities to diversify external links
+* External relationships worth maintaining
+
+For each domain, see which posts link to it and what anchor texts are used.
+
+**Orphaned Pages**
+
+Find content with zero internal links. These pages are invisible to crawlers and users. Link Diagnostics lists every orphaned page so you can:
+
+* Add internal links from relevant content
+* Improve site-wide content discovery
+* Boost the authority of isolated pages
+* Ensure all content is accessible
+
+= URL Redirect Management =
+
+Built-in redirect manager handles site restructuring and migrations:
+
+* Create 301, 302, 307, and 308 redirects
 * Add multiple source URLs to one destination in bulk
-* Category-based organization for better management
-* Active/Inactive status toggling
-* Bulk operations for efficient redirect management
-* Professional redirect handling with proper HTTP headers
+* Organize redirects with categories
+* Toggle redirects active/inactive without deletion
+* Bulk delete operations
 * Source URL uniqueness validation prevents conflicts
 
-**🎯 Powerful Scanning System**
+Perfect for handling old URLs after site migrations or content reorganization.
 
-* On-demand scanning with configurable content type selection
-* Detailed scan history with timestamp tracking
-* Process posts, pages, and custom post types
-* Bulk operations for efficient link management
-* Issue filtering by status, content type, and severity
+= How Scanning Works =
 
-**⚙️ Editorial Control & Workflow**
+Click "Start Scan" on any tab. The plugin:
 
-* Review each issue before taking action
-* One-click access to post editor for fixes
-* Ignore specific issues permanently if needed
-* Full audit trail of all changes
-* Maintains content integrity and SEO safety
+1. Queries your published content (posts, pages, custom post types)
+2. Extracts all links from post content
+3. Checks each URL via WordPress HTTP API
+4. Stores results in custom database tables
+5. Shows progress in real-time
 
-= Real-World Benefits =
-
-**For SEO Professionals:**
-* Eliminate broken links that hurt rankings
-* Optimize internal linking structure
-* Identify redirect chains slowing page speed
-* Monitor external link quality
-* Find orphaned content needing promotion
-
-**For Content Teams:**
-* Pre-migration link audits before redesigns
-* Regular link health maintenance
-* Identify content interconnection opportunities
-* Maintain high-quality user experience
-* Prepare editorial reports on site structure
-
-**For Site Owners:**
-* Improve site crawlability and indexation
-* Reduce bounce rates from broken links
-* Strengthen topical authority through smart internal linking
-* Monitor external partner link health
-* Make data-driven content strategy decisions
-
-= Performance & Reliability =
-
-* Optimized AJAX-based scanning prevents server timeouts
-* Respects WordPress transient caching
-* No frontend performance impact
-* Efficient custom database tables
-* Works on sites of any size
+Scans are on-demand only. No background processing, no automated changes. You control when to scan and what to fix.
 
 == Installation ==
 
 1. Upload the `link-diagnostic-and-insights` folder to `/wp-content/plugins/`
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Navigate to 'Link Diagnostics' in the WordPress admin menu
-4. Select your content types in Settings
-5. Click 'Start Scan' to begin analyzing your links
+4. Configure content types to scan in Settings
+5. Click 'Start Scan' on any tab to begin
 
 == Frequently Asked Questions ==
 
-= How does the plugin fix broken links? =
+= How does fixing work? =
 
-Link Diagnostics provides detailed reports of all link issues with one-click access to fix them. Click 'Edit' to open the post editor and update the link, or use 'Fix' to update a specific link URL directly. You maintain full control over all changes.
+For each issue, you have options:
 
-= How long does scanning take? =
+* Click "Edit" to open the post editor and manually update the link
+* Click "Fix" to automatically update that specific link's URL to the correct destination
+* Click "Ignore" to permanently hide the issue
 
-Scan time depends on your site size. The plugin processes links efficiently using AJAX requests to prevent server timeouts. A site with 100 posts typically completes in a few minutes. Large sites take longer but remain stable throughout the process.
+All fixes require you to initiate them. Nothing happens automatically.
 
-= What happens to my data when I uninstall? =
+= How long does a scan take? =
 
-You control data retention. By default, scan data is preserved. Enable 'Delete on Uninstall' in Settings if you want automatic cleanup upon plugin removal.
+Depends on your site size. A 100-post site typically scans in a few minutes. A 1,000-post site might take 20-30 minutes. The plugin processes efficiently to avoid server timeouts.
 
-= Can I scan specific post types only? =
+= Can I scan only certain post types? =
 
-Yes! Configure which post types to include in Settings. Scan only published posts and pages, or include custom post types as needed.
+Yes. In Settings, select which post types to include. Scan only posts and pages, or include custom post types as needed.
 
-= Does this work on large websites? =
+= What happens to scan data when I uninstall? =
 
-Absolutely. Link Diagnostics is designed for production environments of any size. The efficient scanning system processes one URL per request to prevent resource exhaustion.
+By default, all data is preserved. If you want automatic cleanup, enable "Delete on Uninstall" in Settings before removing the plugin.
+
+= Does this work on large sites? =
+
+Yes. The plugin is designed for production sites of any size. It processes one URL per request to stay within server limits.
 
 = What's the difference between Internal Links and Link Intelligence? =
 
-**Internal Links** scans for problems: redirects, broken links, and errors that need fixing.
+**Internal Links** finds problems: redirects, 404s, broken links, server errors.
 
-**Link Intelligence** analyzes your linking patterns: which pages get the most links, how you use anchor text, and where external links point. This helps optimize your SEO strategy.
+**Link Intelligence** analyzes patterns: which pages get the most links, common anchor texts, external domain relationships, orphaned content.
 
-= How do the redirect management features work? =
+Both provide different insights. Problems need fixing. Patterns inform strategy.
 
-Create redirects by adding source URL(s) and a destination. Support for 301 (permanent), 302 (temporary), 307 (temporary preserving method), and 308 (permanent preserving method). Each source URL can only exist once to prevent conflicts. Organize with categories and toggle active/inactive status.
+= How do redirects work? =
 
-= Can I export scan results? =
+The plugin includes a redirect manager. Add source URL(s) and a destination, choose the redirect type (301, 302, 307, 308), and save. The plugin handles redirects at the template_redirect hook before WordPress loads pages.
 
-Version 1.0.0 focuses on the admin interface for analysis. All data is stored in your WordPress database for future reference and trend analysis.
+Each source URL can only exist once across all redirects to prevent conflicts.
+
+= Will this slow down my site? =
+
+No frontend impact. The plugin only runs in the WordPress admin area. No JavaScript or CSS loaded on the frontend. Scans happen on-demand, not automatically in the background.
 
 == Screenshots ==
 
@@ -169,7 +216,7 @@ Version 1.0.0 focuses on the admin interface for analysis. All data is stored in
 * URL redirect management (301, 302, 307, 308)
 * Multiple source URLs per redirect
 * Redirect editing and bulk operations
-* Manual fix controls with post editor integration
+* Fix controls with post editor integration
 * Bulk fix operations
 * Scan history tracking
 * Configurable data retention
@@ -177,6 +224,6 @@ Version 1.0.0 focuses on the admin interface for analysis. All data is stored in
 
 == Credits ==
 
-Developed by [Àgbà Akin](https://akinolaakeem.com)  
-Managed by [Ssu-Technology Limited](https://swiftspeed.org)  
+Developed by [Àgbà Akin](https://akinolaakeem.com)
+Managed by [Ssu-Technology Limited](https://swiftspeed.org)
 Supported by [Swiftspeed](https://swiftspeed.app)
