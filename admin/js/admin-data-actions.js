@@ -225,11 +225,11 @@
                 const scanId = this.selectedScans[deleted];
                 
                 $.ajax({
-                    url: liAjax.ajaxurl,
+                    url: lhcfwpAjax.ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'li_delete_scan_history',
-                        nonce: liAjax.nonce,
+                        action: 'lhcfwp_delete_scan_history',
+                        nonce: lhcfwpAjax.nonce,
                         scan_id: scanId
                     },
                     success: () => {
@@ -284,11 +284,11 @@
             const filters = {};
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_get_issues',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_get_issues',
+                    nonce: lhcfwpAjax.nonce,
                     scan_type: scanType,
                     page: page,
                     per_page: 20,
@@ -328,11 +328,11 @@
             $('.li-seo-insights').remove();
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_get_intelligence',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_get_intelligence',
+                    nonce: lhcfwpAjax.nonce,
                     metric_type: metricType,
                     page: page,
                     per_page: 20
@@ -367,11 +367,11 @@
             }
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_get_post_titles',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_get_post_titles',
+                    nonce: lhcfwpAjax.nonce,
                     post_ids: uncachedIds
                 },
                 success: (response) => {
@@ -408,11 +408,11 @@
             $table.html('<tr><td colspan="9" class="li-text-center">Loading...</td></tr>');
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_get_scan_history',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_get_scan_history',
+                    nonce: lhcfwpAjax.nonce,
                     page: page,
                     per_page: 20,
                     sort_column: this.sortColumn,
@@ -445,11 +445,11 @@
             $table.html('<tr><td colspan="6" class="li-text-center">Loading...</td></tr>');
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_get_ignored',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_get_ignored',
+                    nonce: lhcfwpAjax.nonce,
                     page: page,
                     per_page: 20
                 },
@@ -470,11 +470,11 @@
             const issueId = $(e.target).closest('button').data('issue-id');
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_fix_link',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_fix_link',
+                    nonce: lhcfwpAjax.nonce,
                     issue_id: issueId
                 },
                 success: (response) => {
@@ -501,11 +501,11 @@
             }
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_ignore_issue',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_ignore_issue',
+                    nonce: lhcfwpAjax.nonce,
                     issue_id: issueId,
                     reason: reason
                 },
@@ -528,11 +528,11 @@
             const issueId = $(e.target).closest('button').data('issue-id');
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_unignore_issue',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_unignore_issue',
+                    nonce: lhcfwpAjax.nonce,
                     issue_id: issueId
                 },
                 success: (response) => {
@@ -588,11 +588,11 @@
             }
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_delete_scan_history',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_delete_scan_history',
+                    nonce: lhcfwpAjax.nonce,
                     scan_id: scanId
                 },
                 success: (response) => {
@@ -617,11 +617,11 @@
             }
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_delete_all_scans',
-                    nonce: liAjax.nonce
+                    action: 'lhcfwp_delete_all_scans',
+                    nonce: lhcfwpAjax.nonce
                 },
                 success: (response) => {
                     if (response.success) {

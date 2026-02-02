@@ -1,4 +1,4 @@
-=== Link Health ===
+=== Link Diagnostics – Broken Links, Redirects, and Link Insights ===
 Contributors: swiftspeed
 Tags: broken links, link checker, internal links, redirect detection, SEO, 404 errors, link management
 Requires at least: 5.6
@@ -12,11 +12,11 @@ Monitor internal and external link health, detect broken links and redirects, an
 
 == Description ==
 
-Link Health is a WordPress link analysis and monitoring tool designed for editorial teams and SEO professionals who need comprehensive visibility into their site's link structure without risking automated content modifications.
+Link Diagnostics is a link analysis and monitoring tool designed for editorial teams and SEO professionals who need comprehensive visibility into their site's link structure without risking automated content modifications.
 
 This plugin scans your WordPress content to identify link issues and provides detailed intelligence about your internal linking patterns and external domain relationships. All fixes require explicit editorial approval through the admin interface.
 
-= What Link Health Does =
+= What Link Diagnostics Does =
 
 **Internal Link Health Monitoring**
 
@@ -40,6 +40,17 @@ This plugin scans your WordPress content to identify link issues and provides de
 * Analyzes anchor text distribution across your content
 * Reveals linking patterns for content strategy insights
 * Helps identify pillar content and key external relationships
+
+**URL Redirects Management**
+
+* Create and manage 301, 302, 307, and 308 redirects
+* Add multiple source URLs to a single destination in one operation
+* Source URL uniqueness validation prevents duplicate redirects
+* Edit existing redirects with full control over sources, destinations, and settings
+* Category-based organization with checkbox selection
+* Bulk delete operations and clear all functionality
+* Active/Inactive status toggling without deletion
+* Professional redirect handling with proper HTTP headers
 
 **Scan Management**
 
@@ -77,9 +88,9 @@ Link Health intentionally does not modify your content automatically. Reasons in
 
 == Installation ==
 
-1. Upload the `link-health` folder to `/wp-content/plugins/`
+1. Upload the `link-diagnostics-and-insights` folder to `/wp-content/plugins/`
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Navigate to 'Link Health' in the WordPress admin menu
+3. Navigate to 'Link Diagnostics' in the WordPress admin menu
 4. Configure your scan settings
 5. Click 'Start Scan' on any tab to begin analysis
 
@@ -87,7 +98,7 @@ Link Health intentionally does not modify your content automatically. Reasons in
 
 = Does this plugin automatically fix broken links? =
 
-No. Link Health provides detection and analysis tools. All fixes must be applied manually through the WordPress admin interface. You can click 'Edit' to open the post editor, or use 'Fix' to update a specific link URL, but you must initiate each action.
+No. Link Diagnostics provides detection and analysis tools. All fixes must be applied manually through the WordPress admin interface. You can click 'Edit' to open the post editor, or use 'Fix' to update a specific link URL, but you must initiate each action.
 
 = How does scanning work? =
 
@@ -95,7 +106,7 @@ When you click 'Start Scan', the plugin processes your content one URL at a time
 
 = What happens to my data when I uninstall the plugin? =
 
-By default, all scan data, link issues, and intelligence records are preserved when you uninstall Link Health. If you want automatic data deletion on uninstall, enable the 'Delete on Uninstall' option in Settings before uninstalling.
+By default, all scan data, link issues, and intelligence records are preserved when you uninstall Link Diagnostics. If you want automatic data deletion on uninstall, enable the 'Delete on Uninstall' option in Settings before uninstalling.
 
 = Can I scan specific post types only? =
 
@@ -103,7 +114,7 @@ Yes. In the Settings tab, you can configure which post types to include in scans
 
 = Does this work on large websites? =
 
-Yes. Link Health is designed for production environments and processes one URL per request to prevent server resource exhaustion. Larger sites will simply take longer to complete scans.
+Yes. Link Diagnostics is designed for production environments and processes one URL per request to prevent server resource exhaustion. Larger sites will simply take longer to complete scans.
 
 = What's the difference between Internal Links and Link Intelligence? =
 
@@ -112,6 +123,18 @@ Internal Links scans for problems (redirects, broken links, errors). Link Intell
 = Can I export scan results? =
 
 Version 1.0.0 does not include export functionality. All data is viewable in the admin interface and stored in your WordPress database.
+
+= How do URL redirects work? =
+
+The plugin includes a comprehensive redirect management system. You can create redirects with single or multiple source URLs pointing to one destination. Each source URL can only exist once across all redirects to prevent conflicts. Redirects support standard types (301, 302, 307, 308) and can be organized using categories. The system processes redirects before WordPress page rendering with proper HTTP status codes.
+
+= Can I add the same source URL to multiple redirects? =
+
+No. Each source URL can only exist in one redirect. This prevents redirect conflicts and loops. If you try to add a source URL that already exists, you'll be prompted to edit or remove it from the existing redirect first. However, multiple different source URLs can redirect to the same destination.
+
+= What's the difference between redirect types? =
+
+301 (Permanent) is for permanently moved content and passes link equity. 302 (Temporary) is for temporarily moved content. 307 (Temporary) maintains the request method during redirection. 308 (Permanent) is like 301 but strictly preserves the HTTP method. Use 301 for most permanent moves and 302 for temporary changes.
 
 == Screenshots ==
 
@@ -128,6 +151,9 @@ Version 1.0.0 does not include export functionality. All data is viewable in the
 * Internal link health monitoring (redirects, 404s, errors)
 * External link error detection (404, 410, 5xx)
 * Link intelligence analysis (most linked pages, external domains, anchor text patterns)
+* URL redirects management (301, 302, 307, 308)
+* Multiple source URLs per redirect with uniqueness validation
+* Redirect editing, bulk delete, and category organization
 * Manual fix controls with post editor integration
 * Bulk fix operations
 * Scan history tracking

@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall handler for Link Intelligence
+ * Uninstall handler for Link Diagnostics
  */
 
 if (!defined('WP_UNINSTALL_PLUGIN')) {
@@ -11,13 +11,13 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 global $wpdb;
 
 // Define table names
-$table_settings = $wpdb->prefix . 'li_settings';
-$table_scans = $wpdb->prefix . 'li_scans';
-$table_issues = $wpdb->prefix . 'li_issues';
-$table_ignored = $wpdb->prefix . 'li_ignored';
-$table_fixes = $wpdb->prefix . 'li_fixes';
-$table_intelligence = $wpdb->prefix . 'li_intelligence';
-$table_scan_state = $wpdb->prefix . 'li_scan_state';
+$table_settings = $wpdb->prefix . 'lhcfwp_settings';
+$table_scans = $wpdb->prefix . 'lhcfwp_scans';
+$table_issues = $wpdb->prefix . 'lhcfwp_issues';
+$table_ignored = $wpdb->prefix . 'lhcfwp_ignored';
+$table_fixes = $wpdb->prefix . 'lhcfwp_fixes';
+$table_intelligence = $wpdb->prefix . 'lhcfwp_intelligence';
+$table_scan_state = $wpdb->prefix . 'lhcfwp_scan_state';
 
 // Check if settings table exists
 $settings_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_settings'") === $table_settings;
@@ -53,6 +53,6 @@ if ($delete_on_uninstall) {
     }
     
     // Clean up any old wp_options data
-    delete_option('li_settings');
-    delete_option('li_scan_state');
+    delete_option('lhcfwp_settings');
+    delete_option('lhcfwp_scan_state');
 }

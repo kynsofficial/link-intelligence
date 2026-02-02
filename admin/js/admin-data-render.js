@@ -61,7 +61,7 @@
                 const isFixable = issue.is_fixable == 1;
                 const isFixed = issue.status === 'fixed';
                 const isPending = issue.status === 'pending';
-                const editUrl = liAjax.site_url + '/wp-admin/post.php?post=' + issue.post_id + '&action=edit';
+                const editUrl = lhcfwpAjax.site_url + '/wp-admin/post.php?post=' + issue.post_id + '&action=edit';
                 
                 html += `<tr>`;
                 
@@ -79,8 +79,8 @@
                 // NEW: Post Type column
                 html += `<td data-sort="post_type"><span class="li-badge li-badge-secondary">${this.formatPostType(issue.post_type)}</span></td>`;
                 
-                // Anchor text
-                html += `<td data-sort="anchor_text">${this.truncateUrl(issue.anchor_text, 30)}</td>`;
+                // Anchor text (escape this - comes from raw HTML)
+                html += `<td data-sort="anchor_text">${this.escapeHtml(this.truncateUrl(issue.anchor_text, 30))}</td>`;
                 
                 // Current URL
                 html += `
@@ -235,7 +235,7 @@
                     const postTitle = item.post_title || item.metric_key;
                     itemDisplay = `
                         <div class="li-intel-item">
-                            <div class="li-intel-title">${this.escapeHtml(postTitle)}</div>
+                            <div class="li-intel-title">${postTitle}</div>
                         </div>
                     `;
                     if (item.metric_value >= 10) {
@@ -275,7 +275,7 @@
                     const zeroPostTitle = item.post_title || 'Unknown';
                     itemDisplay = `
                         <div class="li-intel-item li-intel-orphan">
-                            <div class="li-intel-title">${this.escapeHtml(zeroPostTitle)}</div>
+                            <div class="li-intel-title">${zeroPostTitle}</div>
                             <div class="li-intel-url">${this.truncateUrl(item.metric_key, 60)}</div>
                         </div>
                     `;
@@ -302,7 +302,7 @@
                     <td>
                         <div class="li-table-actions">
                             ${item.post_id ? `
-                                <a href="${liAjax.site_url}/wp-admin/post.php?post=${item.post_id}&action=edit" 
+                                <a href="${lhcfwpAjax.site_url}/wp-admin/post.php?post=${item.post_id}&action=edit" 
                                    class="li-btn li-btn-secondary li-btn-sm" target="_blank" title="Edit Page">
                                     <span class="dashicons dashicons-edit"></span> Edit
                                 </a>
@@ -372,7 +372,7 @@
                                         <span class="li-meta-separator">•</span>
                                         <span class="li-meta-item">Type: ${post.type}</span>
                                         <span class="li-meta-separator">•</span>
-                                        <a href="${post.edit_url || (liAjax.site_url + '/wp-admin/post.php?post=' + post.id + '&action=edit')}" 
+                                        <a href="${post.edit_url || (lhcfwpAjax.site_url + '/wp-admin/post.php?post=' + post.id + '&action=edit')}" 
                                            class="li-meta-link" target="_blank">
                                             Edit <span class="dashicons dashicons-external"></span>
                                         </a>
@@ -431,7 +431,7 @@
                                 <div class="li-simple-post-title">${this.escapeHtml(post.title)}</div>
                                 <div class="li-simple-post-meta">
                                     ID: ${post.id} | Type: ${post.type} | 
-                                    <a href="${post.edit_url || (liAjax.site_url + '/wp-admin/post.php?post=' + post.id + '&action=edit')}" target="_blank">
+                                    <a href="${post.edit_url || (lhcfwpAjax.site_url + '/wp-admin/post.php?post=' + post.id + '&action=edit')}" target="_blank">
                                         Edit <span class="dashicons dashicons-external"></span>
                                     </a>
                                 </div>
@@ -611,7 +611,7 @@
             
             let html = '';
             data.issues.forEach(issue => {
-                const editUrl = liAjax.site_url + '/wp-admin/post.php?post=' + issue.post_id + '&action=edit';
+                const editUrl = lhcfwpAjax.site_url + '/wp-admin/post.php?post=' + issue.post_id + '&action=edit';
                 
                 html += `
                     <tr>
@@ -619,7 +619,7 @@
                         <td data-sort="post_type"><span class="li-badge li-badge-secondary">${this.formatPostType(issue.post_type)}</span></td>
                         <td data-sort="current_url"><a href="${issue.current_url}" target="_blank">${this.truncateUrl(issue.current_url)}</a></td>
                         <td data-sort="issue_type">${this.formatIssueType(issue.issue_type)}</td>
-                        <td data-sort="reason">${issue.reason || '-'}</td>
+                        <td data-sort="reason">${this.escapeHtml(issue.reason || '-')}</td>
                         <td data-sort="ignored_at">${issue.ignored_at}</td>
                         <td>
                             <div class="li-table-actions">

@@ -3,10 +3,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class LI_Ajax {
+class LHCFWP_Ajax {
     
     public static function scan_start() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -31,14 +31,14 @@ class LI_Ajax {
     }
     
     public static function scan_continue() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
         }
         
         // Use wp_options for fast state retrieval
-        $state = get_option('li_scan_state');
+        $state = get_option('lhcfwp_scan_state');
         
         if (!$state) {
             wp_send_json_error(array('message' => 'No active scan'));
@@ -60,36 +60,36 @@ class LI_Ajax {
     }
     
     public static function scan_cancel() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
         }
         
-        $state = get_option('li_scan_state');
+        $state = get_option('lhcfwp_scan_state');
         
         if ($state && isset($state['scan_id'])) {
             // Mark scan as cancelled in the scans table
-            LI_Database::update_scan($state['scan_id'], array(
+            LHCFWP_Database::update_scan($state['scan_id'], array(
                 'status' => 'cancelled',
                 'completed_at' => current_time('mysql')
             ));
         }
         
         // Delete the scan state
-        delete_option('li_scan_state');
+        delete_option('lhcfwp_scan_state');
         
         wp_send_json_success(array('message' => 'Scan cancelled'));
     }
     
     public static function check_scan_status() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
         }
         
-        $state = get_option('li_scan_state');
+        $state = get_option('lhcfwp_scan_state');
         
         wp_send_json_success(array(
             'has_active_scan' => !empty($state) && $state['status'] === 'running',
@@ -98,7 +98,7 @@ class LI_Ajax {
     }
     
     public static function fix_link() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -110,7 +110,7 @@ class LI_Ajax {
             wp_send_json_error(array('message' => 'Invalid issue ID'));
         }
         
-        $result = LI_Fixer::fix_link($issue_id);
+        $result = LHCFWP_Fixer::fix_link($issue_id);
         
         if ($result['success']) {
             wp_send_json_success($result);
@@ -120,7 +120,7 @@ class LI_Ajax {
     }
     
     public static function ignore_issue() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -133,7 +133,7 @@ class LI_Ajax {
             wp_send_json_error(array('message' => 'Invalid issue ID'));
         }
         
-        $result = LI_Database::ignore_issue($issue_id, $reason);
+        $result = LHCFWP_Database::ignore_issue($issue_id, $reason);
         
         if ($result) {
             wp_send_json_success(array('message' => 'Issue ignored'));
@@ -143,7 +143,7 @@ class LI_Ajax {
     }
     
     public static function unignore_issue() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -155,7 +155,7 @@ class LI_Ajax {
             wp_send_json_error(array('message' => 'Invalid issue ID'));
         }
         
-        $result = LI_Database::unignore_issue($issue_id);
+        $result = LHCFWP_Database::unignore_issue($issue_id);
         
         if ($result) {
             wp_send_json_success(array('message' => 'Issue restored'));
@@ -165,7 +165,7 @@ class LI_Ajax {
     }
     
     public static function get_issues() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -176,13 +176,13 @@ class LI_Ajax {
         $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
         $filters = isset($_POST['filters']) ? array_map('sanitize_text_field', wp_unslash($_POST['filters'])) : array();
         
-        $result = LI_Database::get_issues($scan_type, $page, $per_page, $filters);
+        $result = LHCFWP_Database::get_issues($scan_type, $page, $per_page, $filters);
         
         wp_send_json_success($result);
     }
     
     public static function get_ignored() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -191,13 +191,13 @@ class LI_Ajax {
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
         $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
         
-        $result = LI_Database::get_ignored_issues($page, $per_page);
+        $result = LHCFWP_Database::get_ignored_issues($page, $per_page);
         
         wp_send_json_success($result);
     }
     
     public static function get_intelligence() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -207,13 +207,13 @@ class LI_Ajax {
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
         $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
         
-        $result = LI_Database::get_intelligence($metric_type, $page, $per_page);
+        $result = LHCFWP_Database::get_intelligence($metric_type, $page, $per_page);
         
         wp_send_json_success($result);
     }
     
     public static function get_post_titles() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -243,7 +243,7 @@ class LI_Ajax {
     }
     
     public static function save_settings() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -259,8 +259,8 @@ class LI_Ajax {
                                $_POST['settings']['delete_on_uninstall'] === 'true';
         
         $results = array();
-        $results['allow_multiple_content_types'] = LI_Database::update_setting('allow_multiple_content_types', $allow_multiple_content);
-        $results['delete_on_uninstall'] = LI_Database::update_setting('delete_on_uninstall', $delete_on_uninstall);
+        $results['allow_multiple_content_types'] = LHCFWP_Database::update_setting('allow_multiple_content_types', $allow_multiple_content);
+        $results['delete_on_uninstall'] = LHCFWP_Database::update_setting('delete_on_uninstall', $delete_on_uninstall);
         
         $failed = array();
         foreach ($results as $key => $result) {
@@ -277,8 +277,8 @@ class LI_Ajax {
         }
         
         $verify = array(
-            'allow_multiple_content_types' => LI_Database::get_setting('allow_multiple_content_types'),
-            'delete_on_uninstall' => LI_Database::get_setting('delete_on_uninstall')
+            'allow_multiple_content_types' => LHCFWP_Database::get_setting('allow_multiple_content_types'),
+            'delete_on_uninstall' => LHCFWP_Database::get_setting('delete_on_uninstall')
         );
         
         wp_send_json_success(array(
@@ -293,13 +293,13 @@ class LI_Ajax {
     }
     
     public static function get_settings() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
         }
         
-        $settings = LI_Database::get_all_settings();
+        $settings = LHCFWP_Database::get_all_settings();
         
         if (!isset($settings['allow_multiple_content_types'])) {
             $settings['allow_multiple_content_types'] = false;
@@ -312,7 +312,7 @@ class LI_Ajax {
     }
     
     public static function get_scan_history() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -321,13 +321,13 @@ class LI_Ajax {
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
         $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
         
-        $result = LI_Database::get_all_scans($page, $per_page);
+        $result = LHCFWP_Database::get_all_scans($page, $per_page);
         
         wp_send_json_success($result);
     }
     
     public static function delete_scan_history() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -339,7 +339,7 @@ class LI_Ajax {
             wp_send_json_error(array('message' => 'Invalid scan ID'));
         }
         
-        $result = LI_Database::delete_scan($scan_id);
+        $result = LHCFWP_Database::delete_scan($scan_id);
         
         if ($result) {
             wp_send_json_success(array('message' => 'Scan deleted successfully'));
@@ -349,13 +349,13 @@ class LI_Ajax {
     }
     
     public static function delete_all_scans() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
         }
         
-        $result = LI_Database::delete_all_scans();
+        $result = LHCFWP_Database::delete_all_scans();
         
         if ($result) {
             wp_send_json_success(array('message' => 'All scans deleted successfully'));
@@ -365,7 +365,7 @@ class LI_Ajax {
     }
     
     public static function bulk_fix_start() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
@@ -378,7 +378,7 @@ class LI_Ajax {
             wp_send_json_error(array('message' => 'Invalid scan type'));
         }
         
-        $result = LI_Fixer::start_bulk_fix($scan_type, $issue_ids);
+        $result = LHCFWP_Fixer::start_bulk_fix($scan_type, $issue_ids);
         
         if ($result['success']) {
             wp_send_json_success($result);
@@ -388,13 +388,13 @@ class LI_Ajax {
     }
     
     public static function bulk_fix_continue() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
         }
         
-        $result = LI_Fixer::continue_bulk_fix();
+        $result = LHCFWP_Fixer::continue_bulk_fix();
         
         if ($result['success']) {
             wp_send_json_success($result);
@@ -404,13 +404,13 @@ class LI_Ajax {
     }
     
     public static function bulk_fix_cancel() {
-        check_ajax_referer('li_ajax_nonce', 'nonce');
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Unauthorized'));
         }
         
-        $result = LI_Fixer::cancel_bulk_fix();
+        $result = LHCFWP_Fixer::cancel_bulk_fix();
         
         if ($result['success']) {
             wp_send_json_success($result);
@@ -443,13 +443,226 @@ class LI_Ajax {
     private static function get_scanner($scan_type) {
         switch ($scan_type) {
             case 'internal_links':
-                return new LI_Internal_Link_Scanner();
+                return new LHCFWP_Internal_Link_Scanner();
             case 'external_errors':
-                return new LI_External_Scanner();
+                return new LHCFWP_External_Scanner();
             case 'intelligence':
-                return new LI_Intelligence_Scanner();
+                return new LHCFWP_Intelligence_Scanner();
             default:
                 return null;
+        }
+    }
+    
+    // REDIRECT METHODS
+    
+    public static function add_redirect() {
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+        
+        $source_urls = isset($_POST['source_urls']) ? $_POST['source_urls'] : array();
+        $destination_url = isset($_POST['destination_url']) ? wp_unslash($_POST['destination_url']) : '';
+        $redirect_type = isset($_POST['redirect_type']) ? sanitize_text_field(wp_unslash($_POST['redirect_type'])) : '301';
+        $status = isset($_POST['status']) ? sanitize_text_field(wp_unslash($_POST['status'])) : 'active';
+        $category = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : '';
+        
+        // Add protocol if missing for destination URL
+        if (!empty($destination_url) && !preg_match('~^(?:f|ht)tps?://~i', $destination_url)) {
+            $destination_url = 'https://' . $destination_url;
+        }
+        $destination_url = esc_url_raw($destination_url);
+        
+        if (empty($source_urls) || empty($destination_url)) {
+            wp_send_json_error(array('message' => 'Source URL(s) and destination URL are required'));
+        }
+        
+        // Sanitize source URLs
+        $sanitized_sources = array();
+        foreach ($source_urls as $source_url) {
+            $source_url = trim($source_url);
+            if (empty($source_url)) {
+                continue;
+            }
+            
+            // Add protocol if missing
+            if (!preg_match('~^(?:f|ht)tps?://~i', $source_url)) {
+                $source_url = 'https://' . $source_url;
+            }
+            
+            $source_url = esc_url_raw($source_url);
+            if (!empty($source_url)) {
+                $sanitized_sources[] = $source_url;
+            }
+        }
+        
+        if (empty($sanitized_sources)) {
+            wp_send_json_error(array('message' => 'No valid source URLs provided'));
+        }
+        
+        $data = array(
+            'source_urls' => $sanitized_sources,
+            'destination_url' => $destination_url,
+            'redirect_type' => $redirect_type,
+            'status' => $status,
+            'category' => $category
+        );
+        
+        $result = LHCFWP_Database::add_redirect($data);
+        
+        if ($result) {
+            wp_send_json_success(array('message' => 'Redirect added successfully'));
+        } else {
+            $error = LHCFWP_Database::get_last_error();
+            wp_send_json_error(array('message' => $error ? $error : 'Failed to add redirect'));
+        }
+    }
+    
+    public static function update_redirect() {
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+        
+        $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        
+        if (!$id) {
+            wp_send_json_error(array('message' => 'Invalid redirect ID'));
+        }
+        
+        $data = array();
+        
+        if (isset($_POST['source_urls'])) {
+            $source_urls = $_POST['source_urls'];
+            $sanitized_sources = array();
+            
+            foreach ($source_urls as $source_url) {
+                $source_url = trim($source_url);
+                if (empty($source_url)) {
+                    continue;
+                }
+                
+                // Add protocol if missing
+                if (!preg_match('~^(?:f|ht)tps?://~i', $source_url)) {
+                    $source_url = 'https://' . $source_url;
+                }
+                
+                $source_url = esc_url_raw($source_url);
+                if (!empty($source_url)) {
+                    $sanitized_sources[] = $source_url;
+                }
+            }
+            
+            if (empty($sanitized_sources)) {
+                wp_send_json_error(array('message' => 'No valid source URLs provided'));
+            }
+            
+            $data['source_urls'] = $sanitized_sources;
+        }
+        
+        if (isset($_POST['destination_url'])) {
+            $destination_url = wp_unslash($_POST['destination_url']);
+            if (!preg_match('~^(?:f|ht)tps?://~i', $destination_url)) {
+                $destination_url = 'https://' . $destination_url;
+            }
+            $data['destination_url'] = esc_url_raw($destination_url);
+        }
+        
+        if (isset($_POST['redirect_type'])) {
+            $data['redirect_type'] = sanitize_text_field(wp_unslash($_POST['redirect_type']));
+        }
+        if (isset($_POST['status'])) {
+            $data['status'] = sanitize_text_field(wp_unslash($_POST['status']));
+        }
+        if (isset($_POST['category'])) {
+            $data['category'] = sanitize_text_field(wp_unslash($_POST['category']));
+        }
+        
+        $result = LHCFWP_Database::update_redirect($id, $data);
+        
+        if ($result !== false) {
+            wp_send_json_success(array('message' => 'Redirect updated successfully'));
+        } else {
+            $error = LHCFWP_Database::get_last_error();
+            wp_send_json_error(array('message' => $error ? $error : 'Failed to update redirect'));
+        }
+    }
+    
+    public static function delete_redirect() {
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+        
+        $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        
+        if (!$id) {
+            wp_send_json_error(array('message' => 'Invalid redirect ID'));
+        }
+        
+        $result = LHCFWP_Database::delete_redirect($id);
+        
+        if ($result) {
+            wp_send_json_success(array('message' => 'Redirect deleted successfully'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to delete redirect'));
+        }
+    }
+    
+    public static function get_redirects() {
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+        
+        $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+        $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
+        $filters = isset($_POST['filters']) ? array_map('sanitize_text_field', wp_unslash($_POST['filters'])) : array();
+        
+        $result = LHCFWP_Database::get_redirects($page, $per_page, $filters);
+        
+        wp_send_json_success($result);
+    }
+    
+    public static function delete_redirects() {
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+        
+        $ids = isset($_POST['ids']) ? array_map('intval', $_POST['ids']) : array();
+        
+        if (empty($ids)) {
+            wp_send_json_error(array('message' => 'No redirect IDs provided'));
+        }
+        
+        $result = LHCFWP_Database::delete_redirects($ids);
+        
+        if ($result !== false) {
+            wp_send_json_success(array('message' => 'Redirect(s) deleted successfully', 'count' => $result));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to delete redirects'));
+        }
+    }
+    
+    public static function clear_all_redirects() {
+        check_ajax_referer('lhcfwp_ajax_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+        
+        $result = LHCFWP_Database::clear_all_redirects();
+        
+        if ($result !== false) {
+            wp_send_json_success(array('message' => 'All redirects cleared successfully'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to clear redirects'));
         }
     }
 }

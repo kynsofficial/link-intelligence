@@ -62,6 +62,10 @@
                 case 'scan-history':
                     LI_Admin.Data.loadScanHistory();
                     break;
+                case 'redirects':
+                    // Trigger redirect load via custom event
+                    $(document).trigger('li-load-redirects');
+                    break;
                 case 'ignored':
                     LI_Admin.Data.loadIgnored();
                     break;
@@ -80,11 +84,11 @@
         
         checkActiveScan: function() {
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_check_scan_status',
-                    nonce: liAjax.nonce
+                    action: 'lhcfwp_check_scan_status',
+                    nonce: lhcfwpAjax.nonce
                 },
                 success: (response) => {
                     if (response.success && response.data.has_active_scan) {
@@ -108,7 +112,7 @@
         
         closeModal: function(e) {
             if ($(e.target).is('.li-modal') || $(e.target).is('.li-modal-cancel')) {
-                $('#li-scan-modal').removeClass('active');
+                $('.li-modal').removeClass('active');
             }
         },
         
@@ -130,11 +134,11 @@
         
         loadSettings: function() {
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_get_settings',
-                    nonce: liAjax.nonce
+                    action: 'lhcfwp_get_settings',
+                    nonce: lhcfwpAjax.nonce
                 },
                 success: (response) => {
                     if (response.success) {
@@ -153,11 +157,11 @@
             };
             
             $.ajax({
-                url: liAjax.ajaxurl,
+                url: lhcfwpAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'li_save_settings',
-                    nonce: liAjax.nonce,
+                    action: 'lhcfwp_save_settings',
+                    nonce: lhcfwpAjax.nonce,
                     settings: settings
                 },
                 success: (response) => {

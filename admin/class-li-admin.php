@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class LI_Admin {
+class LHCFWP_Admin {
     
     private static $instance = null;
     
@@ -21,10 +21,10 @@ class LI_Admin {
     
     public function add_menu() {
         add_menu_page(
-            'Link Health',
-            'Link Health',
+            'Link Diagnostics',
+            'Link Diagnostics',
             'manage_options',
-            'link-intelligence',
+            'link-diagnostics-and-insights',
             array($this, 'render_page'),
             'dashicons-admin-links',
             30
@@ -32,7 +32,7 @@ class LI_Admin {
     }
     
     public function enqueue_scripts($hook) {
-        if ($hook !== 'toplevel_page_link-intelligence') {
+        if ($hook !== 'toplevel_page_link-diagnostics-and-insights') {
             return;
         }
         
@@ -41,54 +41,63 @@ class LI_Admin {
         
         // Main admin CSS
         wp_enqueue_style(
-            'li-admin-css',
-            LI_PLUGIN_URL . 'admin/css/admin.css',
+            'lhcfwp-admin-css',
+            LHCFWP_PLUGIN_URL . 'admin/css/admin.css',
             array('dashicons'),
-            LI_VERSION
+            LHCFWP_VERSION
         );
         
 
         
         // Enqueue Core JS - handles initialization and navigation
         wp_enqueue_script(
-            'li-admin-core',
-            LI_PLUGIN_URL . 'admin/js/admin-core.js',
+            'lhcfwp-admin-core',
+            LHCFWP_PLUGIN_URL . 'admin/js/admin-core.js',
             array('jquery'),
-            LI_VERSION,
+            LHCFWP_VERSION,
             true
         );
         
         // Enqueue Scans JS - handles all scanning operations
         wp_enqueue_script(
-            'li-admin-scans',
-            LI_PLUGIN_URL . 'admin/js/admin-scans.js',
-            array('jquery', 'li-admin-core'),
-            LI_VERSION,
+            'lhcfwp-admin-scans',
+            LHCFWP_PLUGIN_URL . 'admin/js/admin-scans.js',
+            array('jquery', 'lhcfwp-admin-core'),
+            LHCFWP_VERSION,
             true
         );
         
         // Enqueue Data Render JS - handles rendering (no dependencies on DataActions)
         wp_enqueue_script(
-            'li-admin-data-render',
-            LI_PLUGIN_URL . 'admin/js/admin-data-render.js',
-            array('jquery', 'li-admin-core'),
-            LI_VERSION,
+            'lhcfwp-admin-data-render',
+            LHCFWP_PLUGIN_URL . 'admin/js/admin-data-render.js',
+            array('jquery', 'lhcfwp-admin-core'),
+            LHCFWP_VERSION,
             true
         );
         
         // Enqueue Data Actions JS - handles data loading and actions (depends on DataRender)
         wp_enqueue_script(
-            'li-admin-data-actions',
-            LI_PLUGIN_URL . 'admin/js/admin-data-actions.js',
-            array('jquery', 'li-admin-core', 'li-admin-data-render'),
-            LI_VERSION,
+            'lhcfwp-admin-data-actions',
+            LHCFWP_PLUGIN_URL . 'admin/js/admin-data-actions.js',
+            array('jquery', 'lhcfwp-admin-core', 'lhcfwp-admin-data-render'),
+            LHCFWP_VERSION,
+            true
+        );
+        
+        // Enqueue Redirects JS - handles redirect management
+        wp_enqueue_script(
+            'lhcfwp-admin-redirects',
+            LHCFWP_PLUGIN_URL . 'admin/js/admin-redirects.js',
+            array('jquery', 'lhcfwp-admin-core'),
+            LHCFWP_VERSION,
             true
         );
         
         // Localize for the core script
-        wp_localize_script('li-admin-core', 'liAjax', array(
+        wp_localize_script('lhcfwp-admin-core', 'lhcfwpAjax', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('li_ajax_nonce'),
+            'nonce' => wp_create_nonce('lhcfwp_ajax_nonce'),
             'site_url' => get_site_url()
         ));
     }
@@ -96,17 +105,17 @@ class LI_Admin {
     public function render_page() {
         // Get settings from database
         $settings = array(
-            'allow_multiple_content_types' => LI_Database::get_setting('allow_multiple_content_types', false),
-            'allow_multiple_redirect_types' => LI_Database::get_setting('allow_multiple_redirect_types', false),
-            'delete_on_uninstall' => LI_Database::get_setting('delete_on_uninstall', false)
+            'allow_multiple_content_types' => LHCFWP_Database::get_setting('allow_multiple_content_types', false),
+            'allow_multiple_redirect_types' => LHCFWP_Database::get_setting('allow_multiple_redirect_types', false),
+            'delete_on_uninstall' => LHCFWP_Database::get_setting('delete_on_uninstall', false)
         );
         
         // Get scan state from database
-        $scan_state = LI_Database::get_scan_state();
+        $scan_state = LHCFWP_Database::get_scan_state();
         
         $post_types = $this->get_post_types();
         
-        include LI_PLUGIN_DIR . 'admin/views/main.php';
+        include LHCFWP_PLUGIN_DIR . 'admin/views/main.php';
     }
     
     private function get_post_types() {
