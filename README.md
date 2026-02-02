@@ -1,316 +1,248 @@
-# Link Health
+# Link Diagnostics – Broken Links, Redirects, and Link Insights
 
 **Version:** 1.0.0  
 **Requires:** WordPress 5.6+, PHP 7.4+  
 **License:** GPL v2 or later
 
-Production-grade link analysis and intelligence engine for WordPress. Monitor internal and external link health, detect broken links and redirects, and gain editorial link intelligence without automatic content modifications.
+Comprehensive link health monitoring, redirect management, and SEO intelligence for WordPress. Find broken links, optimize internal linking, and boost your site's SEO performance.
 
 ## Overview
 
-Monitor internal and external link health, detect broken links and redirects, and gain editorial link intelligence without automatic content changes.
+Link Diagnostics is a powerful SEO and link management tool that gives you complete visibility into your site's link structure. Monitor link health, detect issues, detect redirects, optimize internal linking patterns, and fix redirects issues - all from a simple interface.
 
-1. **Internal Link Health**  
-   Redirects, broken links, and server errors on internal URLs.
+**Perfect for:**
+- SEO professionals optimizing site performance
+- Content teams maintaining quality standards
+- Site owners preparing for migrations
+- Anyone managing a content-rich WordPress site
 
-2. **External Link Errors**  
-   Broken and unreachable outbound destinations.
+## Key Features
 
-3. **Link Intelligence**  
-   Linking patterns, anchor text usage, and external domain relationships.
+### 🔍 Internal Link Health Monitoring
 
-All fixes require explicit administrator action. No content is modified automatically.
+Keep your internal links in perfect condition:
 
-## Why Link Health Matters
+- **Redirect Detection**: Find all 301, 302, 307, and 308 redirects and fix them. Clicking fix simply update the anchor text by replacing currently attached url with url being redirected to. BOOST SEO massively
+- **Broken Link Detection**: Identify 404 errors immediately and point to the exact anchor url of this issue.
+- **Server Error Tracking**: Catch 500-level responses
+- **Detailed Reporting**: See exact post, anchor text, and URL for each issue
+- **Quick Fixes**: One-click access to post editor or direct URL replacement
 
-Links degrade over time. Internal restructuring introduces redirect chains. External websites move, change ownership, or shut down. Content evolves, but link references often remain static.
+### 🌐 External Link Error Detection
 
-These issues compound into measurable problems:
+Monitor all outbound links for issues:
 
-- Redirect chains increase page load time and dilute link equity
-- Broken internal links waste crawl budget and harm user experience
-- Broken external links signal poor content maintenance
-- Inefficient internal linking leaves valuable content orphaned
-- Over-linking to specific domains may trigger spam filters
+- **404 & 410 Detection**: Find broken external links
+- **Server Error Tracking**: Identify 5xx responses
+- **Unreachable Domain Alerts**: Spot DNS failures and timeouts
+- **Source Tracking**: Know exactly which posts contain broken links
+- **User Experience Protection**: Maintain site credibility
 
-Link Health addresses these problems through controlled auditing and review workflows rather than automated replacements.
+### 📊 Link Intelligence & SEO Analysis
 
-## Internal Link Health
+Gain powerful insights into your linking strategy:
 
-The Internal Links scanner examines all links within your site and reports:
+**Most Linked Pages**
+- Discover your content hubs and power pages
+- See which pages get the most internal attention
+- Identify opportunities to strengthen important pages
 
-### Redirect Detection
+**Anchor Text Analysis**
+- Understand how you're linking internally
+- Find over-optimized or under-utilized anchor text
+- Improve natural language patterns
 
-- HTTP 301 (Moved Permanently)
-- HTTP 302 (Found / Temporary Redirect)
-- HTTP 307 (Temporary Redirect)
-- HTTP 308 (Permanent Redirect)
+**External Domain Tracking**
+- Monitor outbound link relationships
+- Identify frequently cited sources
+- Track external domain patterns
 
-For each redirect, the plugin shows the current link, the final destination, and the redirect chain.
+**Orphan Page Detection**
+- Find content with zero internal links
+- Discover hidden or forgotten pages
+- Improve site-wide connectivity
 
-### Error Detection
+### ⚡ Smart URL Redirect Management
 
-- HTTP 404 (Not Found)
-- HTTP 410 (Gone)
-- HTTP 5xx (Server Errors)
+Professional redirect handling made easy:
 
-Each issue includes the source post, anchor text, URL, and HTTP status code.
+- **Multiple Redirect Types**: 301, 302, 307, 308 support
+- **Bulk Source URLs**: Add multiple sources to one destination
+- **Category Organization**: Group redirects for easy management
+- **Status Control**: Toggle active/inactive without deletion
+- **Uniqueness Validation**: Prevents duplicate source URLs
+- **Bulk Operations**: Manage redirects efficiently
 
-### Issue Details
+### 🎯 Powerful Scanning System
 
-For every detected issue, Link Health displays:
+- **On-Demand Scanning**: Run scans when you need them
+- **Content Type Selection**: Choose posts, pages, custom post types
+- **Scan History**: Track all scans with detailed logs
+- **Bulk Operations**: Fix multiple issues efficiently
+- **Advanced Filtering**: Filter by status, type, severity
 
-- Source post title and type
-- Anchor text used in the link
-- Current URL
-- Destination URL (for redirects)
-- HTTP status code
-- Issue classification
-- Fix status (Pending, Fixed, Ignored)
+## Real-World Benefits
 
-Administrators can edit the source post, apply a URL replacement, or ignore the issue.
+### For SEO Professionals
 
-## External Link Errors
+**Eliminate Ranking Penalties** from broken links  
+**Optimize Internal Linking** for better authority flow  
+**Fix Redirect Chains** that slow page speed  
+**Monitor Link Quality** systematically  
+**Find Orphaned Content** needing promotion
 
-The External Links scanner validates outbound links to third-party domains.
+### For Content Teams
 
-### Error Types
+**Pre-Migration Audits** before site redesigns  
+**Regular Maintenance** schedules  
+**Content Interconnection** opportunities  
+**Quality Standards** enforcement  
+**Editorial Reports** on site structure
 
-- HTTP 404 (Not Found)
-- HTTP 410 (Gone)
-- HTTP 5xx (Server Errors)
-- DNS failures and timeouts
+### For Site Owners
 
-### Detection Strategy
+**Improved Crawlability** and indexation  
+**Reduced Bounce Rates** from dead links  
+**Stronger Topical Authority**  
+**External Partner Monitoring**  
+**Data-Driven Decisions**
 
-External URL validation uses the WordPress HTTP API with transient caching. URLs are checked once per scan to reduce unnecessary external requests.
+## How It Works
 
-The plugin does not automatically replace external URLs. Editorial review is required.
+### Scanning Process
 
-## Link Intelligence Analysis
+1. Select content types to scan (posts, pages, custom post types)
+2. Click 'Start Scan' from any tab
+3. Plugin processes links efficiently using AJAX
+4. Review detailed reports of findings
+5. Fix issues with one-click access to editor
+6. Track progress in Scan History
 
-Beyond error detection, Link Health provides insight into how content is interconnected.
+### Link Intelligence
 
-### Most Linked Internal Pages
+The intelligence engine analyzes your entire link structure to reveal:
 
-Identifies pages receiving the highest number of inbound internal links. This helps to:
+- **Which pages are your content hubs** (most linked internally)
+- **How you're using anchor text** across your site
+- **Where external links point** (domain analysis)
+- **Which pages need attention** (orphan detection)
 
-- Discover pillar or hub content
-- Identify over-linked or under-linked pages
-- Improve internal linking balance
+### Redirect Management
 
-Results include inbound link counts and expandable details showing source posts and anchor text usage.
+Create and manage redirects professionally:
 
-### External Domains
+1. Add source URL(s) and destination
+2. Choose redirect type (301, 302, 307, 308)
+3. Organize with categories
+4. Toggle active/inactive as needed
+5. Bulk manage for efficiency
 
-Groups outbound links by destination domain to reveal:
+## Technical Details
 
-- Frequently cited external sources
-- Over-reliance on specific domains
-- Citation and reference patterns
+### Performance Optimized
 
-Detailed views show which posts link to each domain and the anchor texts used.
+- AJAX-based scanning prevents timeouts
+- One URL per request for stability
+- Efficient database queries with proper indexing
+- No frontend performance impact
+- Works on sites of any size
 
-### Anchor Text Patterns
+### Security First
 
-Analyzes anchor text usage across the site to identify:
-
-- Repeated exact-match anchors
-- Generic versus descriptive anchors
-- Opportunities for more natural phrasing
-
-This supports editorial consistency and content quality.
-
-## URL Redirects Management
-
-Link Health includes a comprehensive URL redirect management system for handling site restructuring, content migration, and URL changes.
-
-### Redirect Types Supported
-
-- **301 Permanent**: For permanently moved content
-- **302 Temporary**: For temporarily moved content  
-- **307 Temporary**: Temporary redirect maintaining request method
-- **308 Permanent**: Permanent redirect maintaining request method
-
-### Key Features
-
-- **Multiple Source URLs**: Add multiple source URLs redirecting to the same destination in one operation
-- **Source URL Uniqueness**: Each source URL can only exist once - duplicate prevention ensures clean redirect management
-- **Flexible Destinations**: Multiple redirects can share the same destination URL
-- **Bulk Operations**: Select and delete multiple redirects at once, or clear all redirects
-- **Category Organization**: Organize redirects using custom categories (e.g., "Migration", "SEO", "Restructure")
-- **Status Control**: Activate or deactivate redirects without deletion
-- **Edit Capability**: Modify existing redirects including sources, destination, type, and status
-
-### Source URL Management
-
-When adding redirects:
-- **Single or Multiple Sources**: Add one or multiple source URLs per redirect
-- **Uniqueness Check**: The system prevents duplicate source URLs across all redirects
-- **Edit Protection**: When editing, the plugin checks that new source URLs don't conflict with other existing redirects
-- **Grouped Display**: Multiple sources added in one operation display as a single row (hover to see all URLs)
-
-If you attempt to add a source URL that already exists, you'll be prompted to either:
-- Edit the existing redirect containing that source URL
-- Delete that source URL from its current redirect first
-
-### Redirect Display
-
-The redirects table shows:
-- Source URL(s) - truncated with count if multiple
-- Destination URL
-- Redirect type (301, 302, 307, 308)
-- Status (Active/Inactive)
-- Category
-- Creation date
-- Actions (Edit, Toggle Status, Delete)
-
-### Bulk Management
-
-- **Select Multiple**: Use checkboxes to select specific redirects
-- **Delete Selected**: Remove chosen redirects in one action
-- **Clear All**: Remove all redirects with confirmation
-
-### Categories
-
-- Display as checkboxes when adding/editing redirects
-- Select existing categories or enter new ones
-- Filter and organize large redirect collections
-
-Redirects execute before WordPress page rendering with proper HTTP status codes and header support.
-
-## Scan Engine Design
-
-Scans are explicitly initiated by administrators and run entirely within the WordPress admin environment.
-
-### Scan Process
-
-1. Administrator initiates a scan
-2. Published content is queried directly from the database
-3. Links are extracted from `post_content`
-4. URLs are resolved using the WordPress HTTP API
-5. Results are stored incrementally in custom tables
-6. Scan progress is persisted and resumable
-
-There is no frontend crawling and no background content mutation.
-
-### Performance Characteristics
-
-- One URL processed per execution cycle
-- No long-running PHP processes
-- Pagination for large datasets
-- Caching to reduce redundant HTTP requests
-
-Large sites may require longer scan times, but scans remain safe and transparent.
-
-## Performance and Safety
-
-### Frontend Performance
-
-- No frontend JavaScript or CSS
-- No public-facing routes
-- Admin-only execution with capability checks
-
-### Database Design
-
-- Custom tables for scan data
-- Indexed columns for efficient queries
-- Optional cleanup on uninstall
-
-### Security
-
-- Nonce verification for all AJAX requests
-- Capability checks on all admin actions
+- Nonce verification on all AJAX requests
+- Capability checks on admin actions
 - Prepared statements for database queries
-- Escaped output for all rendered data
+- Escaped output for rendered data
+- WordPress coding standards compliant
 
-### Compatibility
+### Database Structure
 
-- Works with posts, pages, and custom post types
-- Compatible with Gutenberg and Classic Editor
-- No conflicts with caching plugins
+Custom tables for optimal performance:
 
-## Screenshots
+- `wp_lhcfwp_settings` - Plugin configuration
+- `wp_lhcfwp_scans` - Scan history
+- `wp_lhcfwp_issues` - Detected problems
+- `wp_lhcfwp_ignored` - Ignored issues
+- `wp_lhcfwp_fixes` - Fix history
+- `wp_lhcfwp_intelligence` - Link analysis
+- `wp_lhcfwp_redirects` - URL redirects
 
-### Internal Link Issues
-![Internal Link Issues](assets/screenshot-1.png)
+### Data Handling
 
-The Internal Links view displays detected redirects and errors in a sortable table. Each row shows the source post, anchor text, current URL, destination (for redirects), HTTP status code, and action buttons.
+**Storage:** All data stays in your WordPress database  
+**Privacy:** No external services, no tracking, no cookies  
+**Retention:** Configurable - keep or delete on uninstall  
+**Requests:** Only validates URLs found in your content
 
-### External Link Errors
-![External Link Errors](assets/screenshot-2.png)
+## Installation
 
-External Errors view lists broken outbound links with source post information, anchor text, broken URL, and HTTP status code.
+1. Upload `link-diagnostic-and-insights` folder to `/wp-content/plugins/`
+2. Activate through WordPress Plugins menu
+3. Navigate to 'Link Diagnostics' in admin menu
+4. Configure Settings (select content types)
+5. Start your first scan
 
+## Configuration
 
-### Link Intelligence Analysis
-![Link Intelligence Analysis](assets/screenshot-3.png)
+### Settings Tab
 
-The Intelligence view shows most-linked internal pages ranked by inbound link count, with expandable details.
+- **Content Types**: Select which post types to scan
+- **Data Retention**: Choose to preserve or delete data on uninstall
+- **Scan Options**: Configure scanning behavior
 
+### First Scan
 
+1. Click 'Internal Links' tab
+2. Select content type (or use default)
+3. Click 'Start Scan'
+4. Monitor progress in real-time
+5. Review results when complete
 
-### External Domains
-![External Domains](assets/screenshot-4.png)
+## Use Cases
 
-External Domains intelligence reveals which external websites receive the most outbound links from your content.
+### Pre-Migration Audit
+Run comprehensive scans before site redesigns to identify and fix all link issues upfront.
 
+### Regular Maintenance
+Schedule monthly scans to catch broken links and maintain site quality.
 
+### SEO Optimization
+Use intelligence insights to strengthen internal linking and improve topical authority.
 
-### Scan History
-![Scan History](assets/screenshot-5.png)
+### Content Strategy
+Identify content hubs, find orphaned pages, and optimize link distribution.
 
-Scan History tracks completed scans, configurations, and results over time.
-
-## Data Handling and Privacy
-
-**Data Storage**
-
-All scan results, link issues, and intelligence data are stored in custom WordPress database tables prefixed with `wp_li_`. The plugin creates the following tables:
-
-* `wp_li_settings`: Plugin configuration
-* `wp_li_scans`: Scan history records
-* `wp_li_issues`: Detected link problems
-* `wp_li_ignored`: Manually ignored issues
-* `wp_li_fixes`: Applied fix history
-* `wp_li_intelligence`: Link pattern analysis
-* `wp_li_scan_state`: Active scan state tracking
-
-**Data Retention**
-
-By default, all plugin data persists after uninstall. If you want automatic cleanup, enable the "Delete on Uninstall" option in Settings before uninstalling the plugin.
-
-**External Requests**
-
-Link Health makes HTTP requests only to URLs found in your own content during scans. No data is sent to external services or third-party APIs. All scanning happens server-side within your WordPress installation.
-
-**Privacy Compliance**
-
-The plugin stores only:
-
-* URLs found in your content
-* HTTP response codes from URL validation
-* Anchor text from your posts
-* WordPress post IDs and titles
-
-No personally identifiable information is collected, stored, or transmitted. No cookies are set. No frontend tracking occurs.
-
-## Installation and Configuration
-
-1. Upload the `link-health` directory to `/wp-content/plugins/`
-2. Activate through the WordPress Plugins menu
-3. Navigate to Link Health in the admin sidebar
-4. Configure Settings:
-   * Select which post types to include in scans
-   * Set data retention preferences
-5. Start your first scan from any tab
+### Redirect Management
+Handle site restructuring professionally with bulk redirect tools.
 
 ## Technical Requirements
 
-* WordPress 5.6 or higher
-* PHP 7.4 or higher
-* MySQL 5.6 or higher / MariaDB 10.1 or higher
-* Administrator account for plugin access
+- WordPress 5.6 or higher
+- PHP 7.4 or higher
+- MySQL 5.6+ / MariaDB 10.1+
+- Administrator capability for access
+
+## Frequently Asked Questions
+
+### How long does scanning take?
+
+Scan time varies by site size. A 100-post site typically completes in minutes. The plugin uses efficient AJAX processing to handle sites of any size safely.
+
+### Can I scan specific content types?
+
+Yes! Configure which post types to include in Settings. Scan only posts and pages or include custom post types as needed.
+
+### How do redirects work?
+
+Create redirects by adding source URL(s) and a destination. The plugin processes redirects before WordPress page rendering with proper HTTP status codes. Each source URL can only exist once to prevent conflicts.
+
+### What about data retention?
+
+You control data retention. By default, scan data is preserved. Enable 'Delete on Uninstall' in Settings for automatic cleanup.
+
+### Does it work on large sites?
+
+Absolutely. The plugin is designed for production environments of any size with efficient one-URL-per-request processing.
 
 ## Credits
 
@@ -320,4 +252,4 @@ No personally identifiable information is collected, stored, or transmitted. No 
 
 ## License
 
-Link Health is free software released under the GNU General Public License v2.0 or later. See LICENSE file for details.
+GPL v2 or later. See LICENSE file for details.

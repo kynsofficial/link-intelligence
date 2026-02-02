@@ -344,9 +344,7 @@
             } else if (metricType === 'external_domain' || metricType === 'most_linked_internal') {
                 const linkingPosts = additionalData.linking_posts || [];
                 const anchorTexts = additionalData.anchor_texts || {};
-                
-                // Create a mapping of post_id to anchor texts used in that post
-                const postToAnchors = this.mapPostsToAnchors(linkingPosts, anchorTexts, item.metric_key);
+                const postAnchors = additionalData.post_anchors || {}; // NEW: Real post-to-anchor mapping
                 
                 content = `
                     <div class="li-expanded-header">
@@ -359,7 +357,16 @@
                 // Render each post with its anchor texts
                 linkingPosts.forEach(postId => {
                     const post = posts[postId] || { id: postId, title: 'Unknown', type: 'Unknown' };
-                    const postAnchors = postToAnchors[postId] || [];
+                    
+                    // Get the ACTUAL anchor texts used by THIS post
+                    // Convert postId to string to match JSON object keys
+                    const thisPostAnchors = postAnchors[String(postId)] || {};
+                    
+                    // Convert to array and sort by count
+                    const anchorsArray = Object.entries(thisPostAnchors).map(([text, count]) => ({
+                        text: text,
+                        count: count
+                    })).sort((a, b) => b.count - a.count);
                     
                     content += `
                         <div class="li-post-anchor-card">
@@ -387,8 +394,8 @@
                                 <div class="li-anchor-tags-wrapper">
                     `;
                     
-                    if (postAnchors.length > 0) {
-                        postAnchors.forEach(anchor => {
+                    if (anchorsArray.length > 0) {
+                        anchorsArray.forEach(anchor => {
                             content += `
                                 <div class="li-anchor-tag">
                                     <span class="li-anchor-tag-text">"${this.escapeHtml(anchor.text)}"</span>
@@ -463,36 +470,9 @@
         mapPostsToAnchors: function(linkingPosts, anchorTexts, targetUrl) {
             const postToAnchors = {};
             
-            // Convert anchor texts object to array
-            const anchorArray = Object.entries(anchorTexts).map(([text, count]) => ({
-                text: text,
-                count: count
-            }));
-            
-            // Sort by count descending
-            anchorArray.sort((a, b) => b.count - a.count);
-            
-            // Distribute anchors across posts
-            // This is an approximation - we assign anchors proportionally
-            if (linkingPosts.length > 0 && anchorArray.length > 0) {
-                linkingPosts.forEach((postId, index) => {
-                    postToAnchors[postId] = [];
-                    
-                    // Assign at least one anchor to each post if possible
-                    if (index < anchorArray.length) {
-                        postToAnchors[postId].push(anchorArray[index]);
-                    }
-                });
-                
-                // If there are more anchors than posts, distribute them
-                if (anchorArray.length > linkingPosts.length) {
-                    for (let i = linkingPosts.length; i < anchorArray.length; i++) {
-                        const postIndex = i % linkingPosts.length;
-                        const postId = linkingPosts[postIndex];
-                        postToAnchors[postId].push(anchorArray[i]);
-                    }
-                }
-            }
+            // linkingPosts is now unused - we get anchor data from additionalData.post_anchors
+            // This method is kept for backward compatibility but should not be called
+            // The new data structure has post_anchors which directly maps post IDs to their anchor texts
             
             return postToAnchors;
         },
